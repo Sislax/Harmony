@@ -4,6 +4,7 @@ using Harmony.Application;
 using Harmony.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,13 @@ IConfiguration configuration = new ConfigurationBuilder()
     .Build();
 
 // Add services to the container.
+
+// Add Logger
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.ClearProviders();
+    loggingBuilder.AddNLog(configuration);
+});
 
 // Add Services from Application Layer (MediatR, AutoMapper, Validators)
 builder.Services.AddApplicationServices();

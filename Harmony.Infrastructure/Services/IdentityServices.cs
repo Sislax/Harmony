@@ -1,66 +1,169 @@
 ﻿using Harmony.Application.Common.Exceptions;
 using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
 using Harmony.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
-namespace Harmony.Infrastructure.Services
+namespace Harmony.Infrastructure.Services;
+
+public class IdentityServices : IIdentityService
 {
-    public class IdentityServices : IIdentityService
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    //private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ILogger<IdentityServices> _logger;
+
+    public IdentityServices(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, /*RoleManager<IdentityRole> roleManager,*/ ILogger<IdentityServices> logger)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        //_roleManager = roleManager;
+        _logger = logger;
+    }
 
-        public IdentityServices(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+    public async Task<RegisterResponseModel> CreateUserAsync(RegisterDTO registerCredential)
+    {
+        ApplicationUser newUser = new ApplicationUser
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _roleManager = roleManager;
+            Id = Guid.NewGuid().ToString(),
+            FirstName = registerCredential.FirstName,
+            LastName = registerCredential.LastName,
+            UserName = registerCredential.Username,
+            Email = registerCredential.Email
+        };
+
+        IdentityResult result;
+
+        try
+        {
+            result = await _userManager.CreateAsync(newUser, registerCredential.Password);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("Error creating user with email: {newUser.Email}. Exception: {ex}", newUser.Email, ex);
+
+            throw;
         }
 
-        public async Task<bool> CreateUserAsync(RegisterDTO registerCredential)
+        if (!result.Succeeded)
         {
-            ApplicationUser newUser = new ApplicationUser
+            _logger.LogWarning("User not created with email: {newUser.Email}", newUser.Email);
+
+            return new RegisterResponseModel
             {
-                Id = Guid.NewGuid().ToString(),
-                FirstName = registerCredential.FirstName,
-                LastName = registerCredential.LastName,
-                UserName = registerCredential.Username,
-                Email = registerCredential.Email
+                IsSucceded = false,
             };
-
-            IdentityResult result = await _userManager.CreateAsync(newUser, registerCredential.Password);
-
-            return result.Succeeded;
         }
 
-        public async Task<bool> SignInUserAsync(LoginDTO loginCredentialss)
+        _logger.LogInformation("User created with email: {newUser.Email}", newUser.Email);
+
+        return new RegisterResponseModel
         {
-            SignInResult result = await _signInManager.PasswordSignInAsync(loginCredentialss.Email, loginCredentialss.Password, false, false);
-            
-            return result.Succeeded;
+            IsSucceded = true,
+            UserId = newUser.Id
+        };
+    }
+
+    public async Task<LoginResponseModel> SignInUserAsync(LoginDTO loginCredentials)
+    {
+        SignInResult result;
+
+        try
+        {
+            result = await _signInManager.PasswordSignInAsync(loginCredentials.Email, loginCredentials.Password, false, false);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("Error signing in user with email: {loginCredentials.Email}. Exception: {ex}", loginCredentials.Email, ex);
+
+            throw;
         }
 
-        public async Task<UserForTokenDTO> GetUserByEmail(string email)
+        if (!result.Succeeded)
         {
-            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+            _logger.LogError("User not signed in with email: {loginCredentials.Email}", loginCredentials.Email);
 
-            if (user == null)
+            return new LoginResponseModel
             {
-                throw new NotFoundException($"User not found with email: {email}");
-            }
-
-            #pragma warning disable CS8601 // Possible null reference assignment.
-            return new UserForTokenDTO
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Username = user.UserName
+                IsSucceded = false,
             };
-            #pragma warning restore CS8601 // Possible null reference assignment.
         }
+
+        _logger.LogInformation("User signed in with email: {loginCredentialss.Email}", loginCredentials.Email);
+
+        return new LoginResponseModel
+        {
+            IsSucceded = true,
+        };
+    }
+
+    public async Task<UserForTokenDTO> GetUserByEmail(string email)
+    {
+        ApplicationUser? applicationUser;
+
+        try
+        {
+            applicationUser = await _userManager.FindByEmailAsync(email);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("Error finding user with email: {email}. Exception: {ex}", email, ex);
+
+            throw;
+        }
+
+        if (applicationUser == null)
+        {
+            _logger.LogError("User not found with email: {email}", email);
+
+            throw new NotFoundException($"User not found with email: {email}");
+        }
+
+        _logger.LogInformation("User found with email: {email}", email);
+
+        return new UserForTokenDTO
+        {
+            Id = applicationUser.Id,
+            Email = applicationUser.Email!, // Suppressing Warning because we are sure that user.Email is not null
+            FirstName = applicationUser.FirstName,
+            LastName = applicationUser.LastName,
+            Username = applicationUser.UserName! // Suppressing Warning because we are sure that user.UserName is not null
+        };
+    }
+
+    public async Task<UserForTokenDTO> GetUserById(string id)
+    {
+        ApplicationUser? applicationUser;
+
+        try
+        {
+            applicationUser = await _userManager.FindByIdAsync(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error finding user with Id: {id}. Exception: {ex}", id, ex);
+
+            throw;
+        }
+
+        if (applicationUser == null)
+        {
+            _logger.LogError("User not found with Id: {id}", id);
+
+            throw new NotFoundException($"User not found with Id: {id}");
+        }
+
+        _logger.LogInformation("User found with Id: {id}", id);
+
+        return new UserForTokenDTO
+        {
+            Id = applicationUser.Id,
+            Email = applicationUser.Email!, // Suppressing Warning because we are sure that user.Email is not null
+            FirstName = applicationUser.FirstName,
+            LastName = applicationUser.LastName,
+            Username = applicationUser.UserName! // Suppressing Warning because we are sure that user.UserName is not null
+        };
     }
 }

@@ -1,10 +1,10 @@
-﻿using Harmony.Application.Models.AuthResponseModels;
-using Harmony.Application.Models.DTOs;
+﻿using Harmony.Application.Models.DTOs;
+using Harmony.Domain.Entities;
 
-namespace Harmony.Application.Common.Interfaces
+namespace Harmony.Application.Common.Interfaces;
+
+public interface ITokenGenerator
 {
-    public interface ITokenGenerator
-    {
-        TokensDTO GenerateTokensAsync(UserForTokenDTO user);
-    }
+    TokensDTO GenerateTokensAsync(UserForTokenDTO user);
+    RefreshToken GenerateRefreshToken(UserForTokenDTO user);
 }
