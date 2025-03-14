@@ -8,6 +8,7 @@ public class RefreshToken : BaseEntity<Guid>
     public DateTime ExpiresAt { get; set; }
     public bool IsRevoked { get; set; } = false;
     public required string UserId { get; set; }
+    public User User { get; set; } = null!;
 
     public void Revoke()
     {

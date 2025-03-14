@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Harmony.Domain\Harmony.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\EnitityTypeConfigurations\" />
-  </ItemGroup>
-
 </Project>

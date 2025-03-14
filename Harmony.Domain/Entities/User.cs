@@ -12,4 +12,9 @@ public class User : BaseEntity<string>
     public required string Username { get; set; }
     public required string Email { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Navigation Proprierty One to Many
+    /// </summary>
+    public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

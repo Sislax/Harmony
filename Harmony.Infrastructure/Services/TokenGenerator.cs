@@ -5,31 +5,27 @@ using System.Text;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.DTOs;
 using Harmony.Domain.Entities;
+using Harmony.Infrastructure.Models.Security;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Harmony.Infrastructure.Services;
 
 public class TokenGenerator : ITokenGenerator
 {
-    private readonly string _key;
-    private readonly string _issuer;
-    private readonly string _audience;
-    private readonly int _tokenExpirationMinutes;
+    private readonly JwtSettings _jwtSettings;
     private readonly ILogger<TokenGenerator> _logger;
 
-    public TokenGenerator(string key, string issueer, string audience, int tokenExpirationMinutes, ILogger<TokenGenerator> logger)
+    public TokenGenerator(IOptions<JwtSettings> jwtSettingsOptions, ILogger<TokenGenerator> logger)
     {
-        _key = key;
-        _issuer = issueer;
-        _audience = audience;
-        _tokenExpirationMinutes = tokenExpirationMinutes;
+        _jwtSettings = jwtSettingsOptions.Value;
         _logger = logger;
     }
 
     public TokensDTO GenerateTokensAsync(UserForTokenDTO user)
     {
-        SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
+        SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         SigningCredentials signinCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         List<Claim> claims = new List<Claim>()
@@ -43,10 +39,10 @@ public class TokenGenerator : ITokenGenerator
         };
 
         JwtSecurityToken token = new JwtSecurityToken(
-            issuer: _issuer,
-            audience: _audience,
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(_tokenExpirationMinutes),
+            expires: DateTime.Now.AddMinutes(_jwtSettings.TokenExpirationMinutes),
             signingCredentials: signinCredentials
             );
 
@@ -70,7 +66,7 @@ public class TokenGenerator : ITokenGenerator
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            ExpiresAt = DateTime.Now.AddDays(7)
+            ExpiresAt = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpirationDays)
         };
     }
 }
