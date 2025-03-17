@@ -14,7 +14,7 @@ public class User : BaseEntity<string>
     public DateTime CreatedAt { get; set; }
 
     /// <summary>
-    /// Navigation Proprierty One to Many
+    /// Navigation Property One to Many
     /// </summary>
     public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

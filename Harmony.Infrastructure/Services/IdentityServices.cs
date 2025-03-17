@@ -2,7 +2,7 @@
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
-using Harmony.Infrastructure.Identity;
+using Harmony.Infrastructure.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
@@ -12,14 +12,14 @@ public class IdentityServices : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    //private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ILogger<IdentityServices> _logger;
 
-    public IdentityServices(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, /*RoleManager<IdentityRole> roleManager,*/ ILogger<IdentityServices> logger)
+    public IdentityServices(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, ILogger<IdentityServices> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        //_roleManager = roleManager;
+        _roleManager = roleManager;
         _logger = logger;
     }
 
@@ -99,7 +99,7 @@ public class IdentityServices : IIdentityService
         };
     }
 
-    public async Task<UserForTokenDTO> GetUserByEmail(string email)
+    public async Task<UserForTokenDTO> GetUserByEmailAsync(string email)
     {
         ApplicationUser? applicationUser;
 
@@ -133,7 +133,7 @@ public class IdentityServices : IIdentityService
         };
     }
 
-    public async Task<UserForTokenDTO> GetUserById(string id)
+    public async Task<UserForTokenDTO> GetUserByIdAsync(string id)
     {
         ApplicationUser? applicationUser;
 
@@ -165,5 +165,63 @@ public class IdentityServices : IIdentityService
             LastName = applicationUser.LastName,
             Username = applicationUser.UserName! // Suppressing Warning because we are sure that user.UserName is not null
         };
+    }
+
+    public async Task<bool> CreateRoleAsync(string roleName)
+    {
+        try
+        {
+            await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+            _logger.LogInformation("Role '{roleName}' created correctly", roleName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error creating the role '{roleName}'. Exception: {ex}", roleName, ex);
+
+            throw;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> AssignRoleAsync(string roleName, string userEmail)
+    {
+        ApplicationUser? applicationUser;
+
+        try
+        {
+            applicationUser = await _userManager.FindByEmailAsync(userEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error finding user with email: {userEmail}. Exception: {ex}", userEmail, ex);
+
+            throw;
+        }
+
+        if (applicationUser == null)
+        {
+            _logger.LogError("User not found with email: {userEmail}", userEmail);
+
+            throw new NotFoundException($"User not found with userEmail: {userEmail}");
+        }
+
+        _logger.LogInformation("User found with email: {userEmail}", userEmail);
+
+        try
+        {
+            await _userManager.AddToRoleAsync(applicationUser, roleName);
+
+            _logger.LogInformation("Role '{roleName}' assigned correctly to the user with  email '{userEmail}'", roleName, userEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error assigning the role '{roleName}' to the user with email '{userEmail}'. Exception: {ex}", roleName, userEmail, ex);
+
+            throw;
+        }
+
+        return true;
     }
 }

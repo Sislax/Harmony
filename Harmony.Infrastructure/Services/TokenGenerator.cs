@@ -30,9 +30,9 @@ public class TokenGenerator : ITokenGenerator
 
         List<Claim> claims = new List<Claim>()
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
+            //new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+            //new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            //new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())

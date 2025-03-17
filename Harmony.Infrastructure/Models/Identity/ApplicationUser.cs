@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Harmony.Infrastructure.Identity;
+namespace Harmony.Infrastructure.Models.Identity;
 
 /// <summary>
 /// ApplicationUser class that inherits from IdentityUser. It is used to handle user authentication and authorization.

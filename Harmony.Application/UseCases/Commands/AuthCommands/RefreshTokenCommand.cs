@@ -78,7 +78,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         try
         {
-            user = await _identityService.GetUserById(storedToken.UserId);
+            user = await _identityService.GetUserByIdAsync(storedToken.UserId);
         }
         catch(Exception ex)
         {

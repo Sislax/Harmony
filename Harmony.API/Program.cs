@@ -37,6 +37,12 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Add Seed Data (Roles and Users)
+using(IServiceScope scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider.AddSeedData();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,5 +1,6 @@
 ﻿using Harmony.Domain.Entities;
-using Harmony.Infrastructure.Identity;
+using Harmony.Infrastructure.Data.EnitityTypeConfigurations;
+using Harmony.Infrastructure.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        new UserEntityTypeConfiguration().Configure(builder.Entity<User>());
+        new RefreshTokenEntityTypeConfiguration().Configure(builder.Entity<RefreshToken>());
+
         base.OnModelCreating(builder);
     }
 }

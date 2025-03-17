@@ -52,7 +52,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
             return result;
         }
 
-        UserForTokenDTO user = await _identityService.GetUserByEmail(request.LoginDTO.Email);
+        UserForTokenDTO user = await _identityService.GetUserByEmailAsync(request.LoginDTO.Email);
 
         TokensDTO tokens = _tokenGenerator.GenerateTokensAsync(user);
 

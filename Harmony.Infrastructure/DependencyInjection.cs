@@ -1,6 +1,6 @@
 ﻿using Harmony.Application.Common.Interfaces;
 using Harmony.Infrastructure.Data;
-using Harmony.Infrastructure.Identity;
+using Harmony.Infrastructure.Models.Identity;
 using Harmony.Infrastructure.Models.Security;
 using Harmony.Infrastructure.Security;
 using Harmony.Infrastructure.Services;
@@ -56,10 +56,10 @@ public static class DependencyInjection
 
             //Password settings
             options.Password.RequireDigit = true;
-            options.Password.RequiredLength = 8;
             options.Password.RequireLowercase = true;
-            options.Password.RequireNonAlphanumeric = true;
             options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequiredLength = 8;
             options.Password.RequiredUniqueChars = 4;
 
             //SignIn settings
@@ -86,5 +86,70 @@ public static class DependencyInjection
         );
 
         return services;
+    }
+
+    public static async Task AddSeedData(this IServiceProvider serviceProvider)
+    {
+        using (RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>())
+        {
+            if (roleManager != null)
+            {
+                IdentityRole? adminRole = await roleManager.FindByNameAsync("Admin");
+
+                if (adminRole == null)
+                {
+                    _ = await roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                IdentityRole? regularUserRole = await roleManager.FindByNameAsync("RegularUSer");
+
+                if (regularUserRole == null)
+                {
+                    _ = await roleManager.CreateAsync(new IdentityRole("RegularUSer"));
+                }
+            }
+        }
+
+        using (UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>())
+        {
+            PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
+
+            if (userManager != null)
+            {
+                ApplicationUser? adminUser = await userManager.FindByEmailAsync("Admin@test.com");
+
+                if (adminUser == null)
+                {
+                    ApplicationUser newAdminUser = new ApplicationUser()
+                    {
+                        FirstName = "Admin",
+                        LastName = "Test",
+                        Email = "Admin@test.com",
+                        UserName = "AdminUser"
+                    };
+
+                    hasher.HashPassword(newAdminUser, "11&&MMxx");
+
+                    _ = await userManager.CreateAsync(newAdminUser);
+                }
+
+                ApplicationUser? regularUser = await userManager.FindByEmailAsync("RegularUser@test.com");
+
+                if (regularUser == null)
+                {
+                    ApplicationUser newRegularUser = new ApplicationUser()
+                    {
+                        FirstName = "Admin",
+                        LastName = "Test",
+                        Email = "RegularUser@test.com",
+                        UserName = "RegularUser"
+                    };
+
+                    hasher.HashPassword(newRegularUser, "00!!LLpp");
+
+                    _ = await userManager.CreateAsync(newRegularUser);
+                }
+            }
+        }
     }
 }
