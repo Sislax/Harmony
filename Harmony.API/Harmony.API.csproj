@@ -18,4 +18,6 @@
   	<ProjectReference Include="..\Harmony.Infrastructure\Harmony.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties secrets_1json__JsonSchema="https://json.schemastore.org/appsettings.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

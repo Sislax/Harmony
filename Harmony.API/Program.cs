@@ -11,7 +11,8 @@ string environment = builder.Configuration["Environment"] ?? throw new NullRefer
 IConfiguration configuration = new ConfigurationBuilder()
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("secrets.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
 
