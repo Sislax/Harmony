@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Harmony.Application.Models.AuthResponseModels;
-using Harmony.Application.Models.DTOs;
 using Harmony.Application.UseCases.Commands.AuthCommands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerDTO)
     {
         RegisterResponseModel result;
 
@@ -49,7 +48,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+    public async Task<IActionResult> Login([FromBody] LoginRequestModel loginDTO)
     {
         LoginResponseModel result;
 

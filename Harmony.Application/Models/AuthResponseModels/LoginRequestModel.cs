@@ -1,6 +1,6 @@
-﻿namespace Harmony.Application.Models.DTOs;
+﻿namespace Harmony.Application.Models.AuthResponseModels;
 
-public class LoginDTO
+public class LoginRequestModel
 {
     public required string Email { get; set; }
     public required string Password { get; set; }

@@ -23,7 +23,7 @@ public class IdentityServices : IIdentityService
         _logger = logger;
     }
 
-    public async Task<RegisterResponseModel> CreateUserAsync(RegisterDTO registerCredential)
+    public async Task<RegisterResponseModel> CreateUserAsync(RegisterRequestModel registerCredential)
     {
         ApplicationUser newUser = new ApplicationUser
         {
@@ -66,7 +66,7 @@ public class IdentityServices : IIdentityService
         };
     }
 
-    public async Task<LoginResponseModel> SignInUserAsync(LoginDTO loginCredentials)
+    public async Task<LoginResponseModel> SignInUserAsync(LoginRequestModel loginCredentials)
     {
         SignInResult result;
 

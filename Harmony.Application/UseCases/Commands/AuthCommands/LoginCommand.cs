@@ -10,9 +10,9 @@ namespace Harmony.Application.UseCases.Commands.AuthCommands;
 
 public class LoginCommand : IRequest<LoginResponseModel>
 {
-    public LoginDTO LoginDTO { get; set; }
+    public LoginRequestModel LoginDTO { get; set; }
 
-    public LoginCommand(LoginDTO loginDTO)
+    public LoginCommand(LoginRequestModel loginDTO)
     {
         LoginDTO = loginDTO;
     }
@@ -39,7 +39,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
     public async Task<LoginResponseModel> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         LoginResponseModel result = await _identityService.SignInUserAsync(
-            new LoginDTO
+            new LoginRequestModel
             {
                 Email = request.LoginDTO.Email,
                 Password = request.LoginDTO.Password

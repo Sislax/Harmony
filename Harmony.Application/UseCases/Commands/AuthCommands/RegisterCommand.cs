@@ -1,6 +1,5 @@
 ﻿using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
-using Harmony.Application.Models.DTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
@@ -10,9 +9,9 @@ namespace Harmony.Application.UseCases.Commands.AuthCommands;
 
 public class RegisterCommand : IRequest<RegisterResponseModel>
 {
-    public RegisterDTO RegisterDTO { get; set; }
+    public RegisterRequestModel RegisterDTO { get; set; }
 
-    public RegisterCommand(RegisterDTO registerDTO)
+    public RegisterCommand(RegisterRequestModel registerDTO)
     {
         RegisterDTO = registerDTO;
     }
@@ -39,7 +38,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         try
         {
             result = await _identityService.CreateUserAsync(
-                new RegisterDTO
+                new RegisterRequestModel
                 {
                     Id = Guid.NewGuid().ToString(),
                     FirstName = request.RegisterDTO.FirstName,

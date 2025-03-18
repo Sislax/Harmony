@@ -18,7 +18,7 @@ public class AuthenticationHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        string jwt = await _authenticationService.GetJwtAsync();
+        string? jwt = await _authenticationService.GetJwtAsync();
 
         bool isToServer = request.RequestUri?.AbsoluteUri.StartsWith(_configuration["HarmonyURL"] ?? throw new NullReferenceException()) ?? false;
 
@@ -27,7 +27,7 @@ public class AuthenticationHandler : DelegatingHandler
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
         }
 
-        HttpResponseMessage response =  await base.SendAsync(request, cancellationToken);
+        HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
         if (!Refreshing && !string.IsNullOrEmpty(jwt) && response.StatusCode == HttpStatusCode.Unauthorized)
         {

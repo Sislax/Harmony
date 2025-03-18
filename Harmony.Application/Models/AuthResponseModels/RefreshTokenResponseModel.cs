@@ -9,7 +9,7 @@ public class RefreshTokenResponseModel
     /// <summary>
     /// Token is nullable because it is not guaranteed that the response will be successful
     /// </summary>
-    public string? Token { get; set; }
+    public string? AccessToken { get; set; }
 
     /// <summary>
     /// RefreshToken is nullable because it is not guaranteed that the response will be successful

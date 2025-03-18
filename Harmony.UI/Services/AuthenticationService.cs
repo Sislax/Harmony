@@ -1,7 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Json;
-using System.Security.Claims;
-using Blazored.SessionStorage;
+﻿using System.Net.Http.Json;
+using Blazored.LocalStorage;
 using Harmony.UI.Models.AuthenticationModels;
 
 namespace Harmony.UI.Services;
@@ -9,16 +7,16 @@ namespace Harmony.UI.Services;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IHttpClientFactory _factory;
-    private readonly ISessionStorageService _sessionStorageService;
-    private string? jwtCache;
+    private readonly ILocalStorageService _localStorageService;
+    private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
     private const string JWT_KEY = nameof(JWT_KEY);
     private const string REFRESH_KEY = nameof(REFRESH_KEY);
-    public event Action<string?>? LoginChange;
 
-    public AuthenticationService(IHttpClientFactory factory, ISessionStorageService sessionStorageService)
+    public AuthenticationService(IHttpClientFactory factory, ILocalStorageService localStorageService, CustomAuthenticationStateProvider customAuthenticationStateProvider)
     {
         _factory = factory;
-        _sessionStorageService = sessionStorageService;
+        _localStorageService = localStorageService;
+        _customAuthenticationStateProvider = customAuthenticationStateProvider;
     }
 
     //public async Task<RegisterResponseModel> RegisterAsync(RegisterRequestModel)
@@ -31,19 +29,22 @@ public class AuthenticationService : IAuthenticationService
         HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
             .PostAsync("api/auth/login", JsonContent.Create(loginRequest));
 
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            throw new UnauthorizedAccessException("Login Failed.");
+            LoginResponseModel? content = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
+
+            if (content == null)
+            {
+                return false;
+            }
+
+            await _localStorageService.SetItemAsync(JWT_KEY, content.Token);
+            await _localStorageService.SetItemAsync(REFRESH_KEY, content.RefreshToken);
+
+            _customAuthenticationStateProvider.NotifyAuthenticationStateHasChanged();
         }
 
-        LoginResponseModel? content = await response.Content.ReadFromJsonAsync<LoginResponseModel>() ?? throw new InvalidDataException();
-
-        await _sessionStorageService.SetItemAsync(JWT_KEY, content.Token);
-        await _sessionStorageService.SetItemAsync(REFRESH_KEY, content.RefreshToken);
-
-        LoginChange?.Invoke(GetUserName(content.Token!));
-
-        return content.IsSucceded;
+        return response.IsSuccessStatusCode;
     }
 
     public async Task LogoutAsync()
@@ -51,55 +52,80 @@ public class AuthenticationService : IAuthenticationService
         HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
             .GetAsync("api/auth/logout");
 
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            throw new UnauthorizedAccessException("Logout Failed.");
+            await _localStorageService.RemoveItemAsync(JWT_KEY);
+            await _localStorageService.RemoveItemAsync(REFRESH_KEY);
+
+            _customAuthenticationStateProvider.NotifyAuthenticationStateHasChanged();
         }
-
-        await _sessionStorageService.RemoveItemAsync(JWT_KEY);
-        await _sessionStorageService.RemoveItemAsync(REFRESH_KEY);
-
-        jwtCache = null;
-
-        LoginChange?.Invoke(null);
     }
 
     public async Task<bool> RefreshAsync()
     {
-        string refreshToken = await _sessionStorageService.GetItemAsync<string>(REFRESH_KEY);
+        string? refreshToken = await _localStorageService.GetItemAsync<string>(REFRESH_KEY);
 
-        HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
+        if (refreshToken != null)
+        {
+            HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
             .PostAsync("api/auth/refresh", JsonContent.Create(refreshToken));
 
-        if (!response.IsSuccessStatusCode)
-        {
-            await LogoutAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                RefreshTokenResponseModel content = await response.Content.ReadFromJsonAsync<RefreshTokenResponseModel>() ?? throw new InvalidDataException();
+            
+                if(content != null)
+                {
+                    await _localStorageService.SetItemAsync(JWT_KEY, content.AccessToken);
+                    await _localStorageService.SetItemAsync(REFRESH_KEY, content.RefreshToken);
 
-            return false;
+                    _customAuthenticationStateProvider.NotifyAuthenticationStateHasChanged();
+
+                    return true;
+                }
+            }
         }
 
-        RefreshTokenResponseModel content = await response.Content.ReadFromJsonAsync<RefreshTokenResponseModel>() ?? throw new InvalidDataException();
+        return false;
 
-        await _sessionStorageService.SetItemAsync(JWT_KEY, content.AccessToken);
-        await _sessionStorageService.SetItemAsync(REFRESH_KEY, content.RefreshToken);
-
-        return true;
+        //if (refreshToken == null)
+        //{
+        //    await LogoutAsync();
+        //
+        //    return false;
+        //}
+        //
+        //HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
+        //    .PostAsync("api/auth/refresh", JsonContent.Create(refreshToken));
+        //
+        //if (!response.IsSuccessStatusCode)
+        //{
+        //    await LogoutAsync();
+        //
+        //    return false;
+        //}
+        //
+        //RefreshTokenResponseModel? content = await response.Content.ReadFromJsonAsync<RefreshTokenResponseModel>();
+        //
+        //if(content == null)
+        //{
+        //    await LogoutAsync();
+        //
+        //    return false;
+        //}
+        //
+        //await _localStorageService.SetItemAsync(JWT_KEY, content.AccessToken);
+        //await _localStorageService.SetItemAsync(REFRESH_KEY, content.RefreshToken);
+        //
+        //_customAuthenticationStateProvider.NotifyAuthenticationStateHasChanged();
+        //
+        //return true;
     }
 
-    public async ValueTask<string> GetJwtAsync()
+    public async ValueTask<string?> GetJwtAsync()
     {
-        if (string.IsNullOrEmpty(jwtCache))
-        {
-            jwtCache = await _sessionStorageService.GetItemAsync<string>(JWT_KEY);
-        }
+        string? jwt = await _localStorageService.GetItemAsync<string>(JWT_KEY);
 
-        return jwtCache;
-    }
-
-    private static string GetUserName(string token)
-    {
-        JwtSecurityToken jwt = new JwtSecurityToken(token);
-
-        return jwt.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+        return jwt;
     }
 }

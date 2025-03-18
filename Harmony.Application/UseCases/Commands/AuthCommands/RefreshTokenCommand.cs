@@ -90,7 +90,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         return new RefreshTokenResponseModel
         {
             IsSucceded = true,
-            Token = _tokenGenerator.GenerateJwtToken(user),
+            AccessToken = _tokenGenerator.GenerateJwtToken(user),
             RefreshToken = storedToken.Token
         };
     }

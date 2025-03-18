@@ -5,8 +5,8 @@ namespace Harmony.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
-    public Task<RegisterResponseModel> CreateUserAsync(RegisterDTO registerCredentials);
-    public Task<LoginResponseModel> SignInUserAsync(LoginDTO loginCredentials);
+    public Task<RegisterResponseModel> CreateUserAsync(RegisterRequestModel registerCredentials);
+    public Task<LoginResponseModel> SignInUserAsync(LoginRequestModel loginCredentials);
     public Task<UserForTokenDTO> GetUserByEmailAsync(string email);
     public Task<UserForTokenDTO> GetUserByIdAsync(string id);
     public Task<bool> CreateRoleAsync(string roleName);
