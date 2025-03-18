@@ -19,5 +19,5 @@ public class LoginResponseModel
     /// <summary>
     /// RefreshToken is nullable because it is not guaranteed that the login process will be successful.
     /// </summary>
-    public RefreshToken? RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
 }

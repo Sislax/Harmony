@@ -10,9 +10,9 @@ namespace Harmony.Application.UseCases.Commands.AuthCommands;
 
 public class RefreshTokenCommand : IRequest<RefreshTokenResponseModel>
 {
-    public RefreshToken RefreshToken { get; set; }
+    public string RefreshToken { get; set; }
 
-    public RefreshTokenCommand(RefreshToken refreshToken)
+    public RefreshTokenCommand(string refreshToken)
     {
         RefreshToken = refreshToken;
     }
@@ -41,11 +41,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         try
         {
-            storedToken = await _refreshTokenRepository.GetRefreshToken(request.RefreshToken.Token);
+            storedToken = await _refreshTokenRepository.GetRefreshToken(request.RefreshToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occured while getting refresh token with token {Token}. Exception: {ex}", request.RefreshToken.Token, ex);
+            _logger.LogError("An error occured while getting refresh token with token {Token}. Exception: {ex}", request.RefreshToken, ex);
 
             throw;
         }
@@ -60,7 +60,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
             };
         }
 
-        storedToken.Revoke();
+        _tokenGenerator.ExtendRefreshTokenExpiration(storedToken);
 
         try
         {
@@ -69,7 +69,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occured while revoking refresh token with token {Token}. Exception: {ex}", request.RefreshToken.Token, ex);
+            _logger.LogError("An error occured while revoking refresh token with token {Token}. Exception: {ex}", request.RefreshToken, ex);
 
             throw;
         }
@@ -87,12 +87,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
             throw;
         }
 
-        RefreshToken token = _tokenGenerator.GenerateRefreshToken(user);
-
         return new RefreshTokenResponseModel
         {
             IsSucceded = true,
-            RefreshToken = token
+            Token = _tokenGenerator.GenerateJwtToken(user),
+            RefreshToken = storedToken.Token
         };
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Harmony.Application.Common.Interfaces;
-using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
@@ -8,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Commands.AuthCommands;
 
-public class LogoutCommand : IRequest<LogoutResponseModel>
+public class LogoutCommand : IRequest<bool>
 {
     public Claim UserId { get; set; }
 
@@ -18,7 +17,7 @@ public class LogoutCommand : IRequest<LogoutResponseModel>
     }
 }
 
-public class LogoutCommandHandler : IRequestHandler<LogoutCommand, LogoutResponseModel>
+public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
 {
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IUnitOfWork _unitoOfWork;
@@ -31,7 +30,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, LogoutRespons
         _logger = logger;
     }
 
-    public async Task<LogoutResponseModel> Handle(LogoutCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         List<RefreshToken>? refreshTokens;
 
@@ -50,10 +49,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, LogoutRespons
         {
             _logger.LogWarning("No refresh tokens found for user with id: {UserId}", request.UserId.Value);
 
-            return new LogoutResponseModel
-            {
-                IsSucceded = false
-            };
+            return false;
         }
 
         foreach (RefreshToken token in refreshTokens)
@@ -76,9 +72,6 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, LogoutRespons
 
         _logger.LogInformation("Refresh tokens revoked for user with id: {UserId}", request.UserId.Value);
 
-        return new LogoutResponseModel
-        {
-            IsSucceded = true
-        };
+        return true;
     }
 }

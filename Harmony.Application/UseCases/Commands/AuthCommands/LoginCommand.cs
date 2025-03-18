@@ -2,6 +2,7 @@
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
+using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -54,12 +55,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
 
         UserForTokenDTO user = await _identityService.GetUserByEmailAsync(request.LoginDTO.Email);
 
-        TokensDTO tokens = _tokenGenerator.GenerateTokensAsync(user);
+        string token = _tokenGenerator.GenerateJwtToken(user);
+        RefreshToken refreshToken = _tokenGenerator.GenerateRefreshToken(user);
 
         try
         {
             // Saving Refresh Token in the database
-            _refreshTokenRepository.InsertRefreshToken(tokens.RefreshToken);
+            _refreshTokenRepository.InsertRefreshToken(refreshToken);
 
             await _unitOfWork.SaveChangesAsync();
         }
@@ -73,8 +75,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
         _logger.LogInformation("User with email {Email} has logged in", request.LoginDTO.Email);
 
         result.UserId = user.Id;
-        result.Token = tokens.AccessToken;
-        result.RefreshToken = tokens.RefreshToken;
+        result.Token = token;
+        result.RefreshToken = refreshToken.Token;
 
         return result;
     }

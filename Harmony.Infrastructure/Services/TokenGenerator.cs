@@ -23,7 +23,7 @@ public class TokenGenerator : ITokenGenerator
         _logger = logger;
     }
 
-    public TokensDTO GenerateTokensAsync(UserForTokenDTO user)
+    public string GenerateJwtToken(UserForTokenDTO user)
     {
         SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         SigningCredentials signinCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -48,15 +48,9 @@ public class TokenGenerator : ITokenGenerator
 
         string encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        RefreshToken refreshToken = GenerateRefreshToken(user);
+        _logger.LogInformation("Generated new token for user {user.Username}", user.Username);
 
-        _logger.LogInformation("Generated new tokens for user {user.Username}", user.Username);
-
-        return new TokensDTO
-        {
-            AccessToken = encodedToken,
-            RefreshToken = refreshToken
-        };
+        return encodedToken;
     }
 
     public RefreshToken GenerateRefreshToken(UserForTokenDTO user)
@@ -68,5 +62,12 @@ public class TokenGenerator : ITokenGenerator
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             ExpiresAt = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpirationDays)
         };
+    }
+
+    public RefreshToken ExtendRefreshTokenExpiration(RefreshToken refreshToken)
+    {
+        refreshToken.ExpiresAt = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+
+        return refreshToken;
     }
 }

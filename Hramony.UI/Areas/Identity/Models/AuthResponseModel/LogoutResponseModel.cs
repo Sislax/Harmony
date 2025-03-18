@@ -1,4 +1,4 @@
-﻿namespace Harmony.Application.Models.AuthResponseModels;
+﻿namespace Hramony.UI.Areas.Identity.Models.AuthResponseModel;
 
 public class LogoutResponseModel
 {

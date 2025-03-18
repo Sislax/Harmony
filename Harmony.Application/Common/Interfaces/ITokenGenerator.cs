@@ -5,6 +5,7 @@ namespace Harmony.Application.Common.Interfaces;
 
 public interface ITokenGenerator
 {
-    TokensDTO GenerateTokensAsync(UserForTokenDTO user);
+    string GenerateJwtToken(UserForTokenDTO user);
     RefreshToken GenerateRefreshToken(UserForTokenDTO user);
+    RefreshToken ExtendRefreshTokenExpiration(RefreshToken refreshToken);
 }

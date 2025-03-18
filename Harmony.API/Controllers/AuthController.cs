@@ -2,7 +2,6 @@
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
 using Harmony.Application.UseCases.Commands.AuthCommands;
-using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +23,18 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
-        RegisterResponseModel result = await _sender.Send(new RegisterCommand(registerDTO));
+        RegisterResponseModel result;
+
+        try
+        {
+            result = await _sender.Send(new RegisterCommand(registerDTO));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while register the user with Email '{registerDTO.Email}'. Exception: {ex}", registerDTO.Email, ex);
+
+            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
+        }
 
         if (!result.IsSucceded)
         {
@@ -41,7 +51,18 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
     {
-        LoginResponseModel result = await _sender.Send(new LoginCommand(loginDTO));
+        LoginResponseModel result;
+
+        try
+        {
+            result = await _sender.Send(new LoginCommand(loginDTO));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while logging in the user with Email '{loginDTO.Email}'. Exception: {ex}", loginDTO.Email, ex);
+
+            return StatusCode(500, "Ops... Sometihing went wrong. Login failed.");
+        }
 
         if (!result.IsSucceded)
         {
@@ -54,7 +75,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("logout")]
+    [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
         Claim? userId = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -66,9 +87,20 @@ public class AuthController : ControllerBase
             return Unauthorized("User is not authenticated");
         }
 
-        LogoutResponseModel result = await _sender.Send(new LogoutCommand(userId));
+        bool result;
 
-        if (!result.IsSucceded)
+        try
+        {
+            result = await _sender.Send(new LogoutCommand(userId));
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("Error while logging. Exception: {ex}", ex);
+
+            return StatusCode(500, "Ops... Something went wrong. Logout failed.");
+        }
+
+        if (!result)
         {
             _logger.LogWarning("User with Id {userId} failed to logout", userId);
 
@@ -81,17 +113,28 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshToken refreshToken)
+    public async Task<IActionResult> Refresh([FromBody] string refreshToken)
     {
-        RefreshTokenResponseModel result = await _sender.Send(new RefreshTokenCommand(refreshToken));
+        RefreshTokenResponseModel result;
+
+        try
+        {
+            result = await _sender.Send(new RefreshTokenCommand(refreshToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while refresh the token. Exception: {ex}", ex);
+
+            return StatusCode(500, "Ops... Something went wrong. Refresh failed.");
+        }
 
         if (!result.IsSucceded)
         {
-            _logger.LogWarning("User with Id {refreshToken.UserId} failed to refresh token", refreshToken.UserId);
+            _logger.LogWarning("Failed to refresh the token '{refreshToken}'", refreshToken);
 
             return BadRequest(result);
         }
-        _logger.LogInformation("User with Id {refreshToken.UserId} has refreshed token", refreshToken.UserId);
+        _logger.LogInformation("Successfully refreshed with token '{refreshToken}'", refreshToken);
 
         return Ok(result);
     }

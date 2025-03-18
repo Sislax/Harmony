@@ -11,8 +11,29 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
         // PK
         builder.HasKey(u => u.Id);
 
+        // Properties
+        builder.Property(u => u.FirstName)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(u => u.LastName)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(u => u.Username)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(u => u.CreatedAt)
+            .IsRequired();
+
         // one User -> many RefreshToken
         builder.HasMany(u => u.RefreshTokens)
-            .WithOne(rt => rt.User);
+            .WithOne(rt => rt.User)
+            .HasForeignKey(rt => rt.UserId);
     }
 }
