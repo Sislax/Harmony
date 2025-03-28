@@ -8,6 +8,8 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.ToTable("Users");
+
         // PK
         builder.HasKey(u => u.Id);
 

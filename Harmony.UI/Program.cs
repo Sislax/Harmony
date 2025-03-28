@@ -5,6 +5,7 @@ using Harmony.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -13,11 +14,14 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Add Session Storage
 builder.Services.AddBlazoredLocalStorageAsSingleton();
 
+// Add MudBlazor
+builder.Services.AddMudServices();
+
 // Add Services
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<AuthenticationHandler>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
+builder.Services.AddSingleton<CustomAuthenticationStateProvider>();
+builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
 
 // Configuration for the HTTP Handler
 builder.Services.AddHttpClient("HarmonyAPI")
@@ -25,5 +29,9 @@ builder.Services.AddHttpClient("HarmonyAPI")
     .AddHttpMessageHandler<AuthenticationHandler>();
 
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();

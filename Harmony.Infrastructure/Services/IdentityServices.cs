@@ -72,7 +72,19 @@ public class IdentityServices : IIdentityService
 
         try
         {
-            result = await _signInManager.PasswordSignInAsync(loginCredentials.Email, loginCredentials.Password, false, false);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(loginCredentials.Email);
+
+            if (user == null)
+            {
+                _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
+
+                return new LoginResponseModel
+                {
+                    IsSucceded = false,
+                };
+            }
+
+            result = await _signInManager.PasswordSignInAsync(user.UserName!, loginCredentials.Password, false, false);
         }
         catch(Exception ex)
         {

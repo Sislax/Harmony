@@ -2,11 +2,13 @@
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.UseCases.Commands.AuthCommands;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Harmony.API.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -74,7 +76,8 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("logout")]
+    [HttpDelete("logout")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Logout()
     {
         Claim? userId = User.FindFirst(ClaimTypes.NameIdentifier);

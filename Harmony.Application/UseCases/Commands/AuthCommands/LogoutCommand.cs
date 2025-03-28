@@ -52,20 +52,14 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
             return false;
         }
 
-        foreach (RefreshToken token in refreshTokens)
-        {
-            token.Revoke();
-        }
-
         try
         {
-            _refreshTokenRepository.UpdateRange(refreshTokens);
-
+            _refreshTokenRepository.RemoveRange(refreshTokens);
             await _unitoOfWork.SaveChangesAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError("An error occured while saving revoked tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
+            _logger.LogError("An error occured while deleting tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
 
             throw;
         }

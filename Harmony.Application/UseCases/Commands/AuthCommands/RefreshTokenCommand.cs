@@ -50,7 +50,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
             throw;
         }
 
-        if(storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow || storedToken.IsRevoked)
+        if(storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow)
         {
             _logger.LogWarning("Refresh token is invalid or expired");
 

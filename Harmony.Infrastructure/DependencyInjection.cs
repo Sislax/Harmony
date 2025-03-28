@@ -1,7 +1,11 @@
-﻿using Harmony.Application.Common.Interfaces;
+﻿using System.Text;
+using Harmony.Application.Common.Interfaces;
+using Harmony.Domain.Abstractions.RepositoryInterfaces;
+using Harmony.Domain.Entities;
 using Harmony.Infrastructure.Data;
 using Harmony.Infrastructure.Models.Identity;
 using Harmony.Infrastructure.Models.Security;
+using Harmony.Infrastructure.Repositories;
 using Harmony.Infrastructure.Security;
 using Harmony.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,6 +20,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddInfrastructureServices();
+
         services.AddIdentity();
 
         services.AddAuthentication(configuration);
@@ -32,7 +38,11 @@ public static class DependencyInjection
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
 
         services.ConfigureOptions<JwtTokenValidationConfiguration>()
-            .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
@@ -88,12 +98,22 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        return services;
+    }
+
     public static async Task AddSeedData(this IServiceProvider serviceProvider)
     {
-        using (RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>())
+        using (UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>())
         {
-            if (roleManager != null)
+            using (RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>())
             {
+                // Create Admin role if it doesn't exist
                 IdentityRole? adminRole = await roleManager.FindByNameAsync("Admin");
 
                 if (adminRole == null)
@@ -101,22 +121,20 @@ public static class DependencyInjection
                     _ = await roleManager.CreateAsync(new IdentityRole("Admin"));
                 }
 
-                IdentityRole? regularUserRole = await roleManager.FindByNameAsync("RegularUSer");
+                // Create RegularUser role if it doesn't exist
+                IdentityRole? regularUserRole = await roleManager.FindByNameAsync("RegularUser");
 
                 if (regularUserRole == null)
                 {
-                    _ = await roleManager.CreateAsync(new IdentityRole("RegularUSer"));
+                    _ = await roleManager.CreateAsync(new IdentityRole("RegularUser"));
                 }
-            }
-        }
 
-        using (UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>())
-        {
-            PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
+                PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
 
-            if (userManager != null)
-            {
+                // Create Admin user if it doesn't exist
                 ApplicationUser? adminUser = await userManager.FindByEmailAsync("Admin@test.com");
+
+                IUserRepository userRepository = serviceProvider.GetRequiredService<IUserRepository>();
 
                 if (adminUser == null)
                 {
@@ -125,30 +143,81 @@ public static class DependencyInjection
                         FirstName = "Admin",
                         LastName = "Test",
                         Email = "Admin@test.com",
-                        UserName = "AdminUser"
+                        UserName = "AdminUser",
                     };
 
-                    hasher.HashPassword(newAdminUser, "11&&MMxx");
+                    newAdminUser.PasswordHash = hasher.HashPassword(newAdminUser, "11&&MMxx");
 
                     _ = await userManager.CreateAsync(newAdminUser);
+
+                    // Add Admin role to Admin user
+                    IdentityRole? existingAdminRole = await roleManager.FindByNameAsync("Admin");
+
+                    if (existingAdminRole != null)
+                    {
+                        string? adminRoleName = existingAdminRole.Name;
+
+                        if (adminRoleName != null)
+                        {
+                            _ = await userManager.AddToRoleAsync(newAdminUser, adminRoleName);
+                        }
+                    }
+
+                    // Create Domain User entity for Admin user
+                    userRepository.InsertUser(new User()
+                    {
+                        Id = newAdminUser.Id,
+                        FirstName = newAdminUser.FirstName,
+                        LastName = newAdminUser.LastName,
+                        Email = newAdminUser.Email,
+                        Username = newAdminUser.UserName
+                    });
                 }
 
+                // Create RegularUser user if it doesn't exist
                 ApplicationUser? regularUser = await userManager.FindByEmailAsync("RegularUser@test.com");
 
                 if (regularUser == null)
                 {
                     ApplicationUser newRegularUser = new ApplicationUser()
                     {
-                        FirstName = "Admin",
+                        FirstName = "RegularUser",
                         LastName = "Test",
                         Email = "RegularUser@test.com",
                         UserName = "RegularUser"
                     };
 
-                    hasher.HashPassword(newRegularUser, "00!!LLpp");
+                    newRegularUser.PasswordHash = hasher.HashPassword(newRegularUser, "00!!LLpp");
 
                     _ = await userManager.CreateAsync(newRegularUser);
+
+                    // Add RegularUser role to RegularUser user
+                    IdentityRole? existingRegularUserRole = await roleManager.FindByNameAsync("RegularUser");
+
+                    if (existingRegularUserRole != null)
+                    {
+                        string? adminRoleName = existingRegularUserRole.Name;
+
+                        if (adminRoleName != null)
+                        {
+                            _ = await userManager.AddToRoleAsync(newRegularUser, adminRoleName);
+                        }
+                    }
+
+                    // Create Domain User entity for RegularUser user
+                    userRepository.InsertUser(new User()
+                    {
+                        Id = newRegularUser.Id,
+                        FirstName = newRegularUser.FirstName,
+                        LastName = newRegularUser.LastName,
+                        Email = newRegularUser.Email,
+                        Username = newRegularUser.UserName
+                    });
                 }
+
+                IUnitOfWork unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+
+                await unitOfWork.SaveChangesAsync();
             }
         }
     }

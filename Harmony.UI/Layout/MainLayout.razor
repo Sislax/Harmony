@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -11,6 +12,16 @@
 
         <article class="content px-4">
             @Body
+
+            @* Required *@
+            <MudThemeProvider />
+            <MudPopoverProvider />
+
+            @* Needed for dialogs *@
+            <MudDialogProvider />
+
+            @* Needed for snackbars *@
+            <MudSnackbarProvider />
         </article>
     </main>
 </div>

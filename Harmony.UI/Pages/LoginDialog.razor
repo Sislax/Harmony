@@ -1,0 +1,58 @@
+﻿@inject IAuthenticationService _authService
+@inject NavigationManager _navigationManager
+
+@page "/login"
+
+<MudDialog>
+
+	<TitleContent>
+		Login
+	</TitleContent>
+
+	<DialogContent>
+		<MudTextField @bind-Value="Email" Placeholder="Email..." Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="Password" Placeholder="Password..." Variant="Variant.Outlined" />
+		<MudText Typo="Typo.body2" Color="Color.Error">@LoginResult</MudText>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Log in</MudButton>
+	</DialogActions>
+
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	private IMudDialogInstance MudDialog { get; set; } = null!;
+	private string Email { get; set; } = string.Empty;
+	private string Password { get; set; } = string.Empty;
+	private string LoginResult { get; set; } = string.Empty;
+
+	private async Task Submit()
+	{
+		LoginRequestModel loginRequestModel = new LoginRequestModel
+			{
+				Email = Email,
+				Password = Password
+			};
+
+		bool isResponseSuccessful = await _authService.LoginAsync(loginRequestModel);
+
+		if(!isResponseSuccessful){
+			LoginResult = "Email or Password are not correct. Please use valid credentials.";
+			return;
+		}
+
+		MudDialog.Close(DialogResult.Ok(true));
+
+		StateHasChanged();
+
+		//_navigationManager.NavigateTo("/");
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

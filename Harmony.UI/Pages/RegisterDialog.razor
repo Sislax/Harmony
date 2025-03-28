@@ -1,0 +1,63 @@
+﻿@inject IAuthenticationService _authService
+@inject NavigationManager _navigationManager
+
+@page "/register"
+
+<MudDialog>
+
+	<TitleContent>
+		Register
+	</TitleContent>
+
+	<DialogContent>
+		<MudTextField @bind-Value="Email" Label="Outlined" Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="Password" Label="Outlined" Variant="Variant.Outlined" />
+		<MudText Typo="Typo.body2" Color="Color.Error">@RegisterResult</MudText>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Log in</MudButton>
+	</DialogActions>
+
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	private IMudDialogInstance MudDialog { get; set; } = null!;
+	private string FirstName { get; set; } = string.Empty;
+	private string LastName { get; set; } = string.Empty;
+	private string Username { get; set; } = string.Empty;
+	private string Email { get; set; } = string.Empty;
+	private string Password { get; set; } = string.Empty;
+	private string RegisterResult { get; set; } = string.Empty;
+
+	private async Task Submit()
+	{
+		RegisterRequestModel registerRequestModel = new RegisterRequestModel
+			{
+				FirstName = FirstName,
+				LastName = LastName,
+				Username = Username,
+				Email = Email,
+				Password = Password
+			};
+
+		bool isResponseSuccessful = await _authService.RegisterAsync(registerRequestModel);
+
+		if (!isResponseSuccessful)
+		{
+			RegisterResult = "Email or Password are not correct. Please use valid credentials.";
+			return;
+		}
+
+		MudDialog.Close(DialogResult.Ok(true));
+
+		_navigationManager.NavigateTo("/");
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

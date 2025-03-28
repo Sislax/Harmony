@@ -1,7 +1,22 @@
 ﻿@page "/"
+@using System.Security.Claims
+
+@inject CustomAuthenticationStateProvider customAuthStateProvider
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Benvenuto su Harmony, @userName</h1>
 
-Welcome to your new app.
+@code {
+    private string? userName = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await customAuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.Identity!.IsAuthenticated)
+        {
+            userName = authState.User.Identity.Name;
+        }
+    }
+}

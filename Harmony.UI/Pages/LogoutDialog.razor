@@ -1,0 +1,40 @@
+﻿@inject IAuthenticationService _authService
+@inject NavigationManager _navigationManager
+
+<MudDialog>
+
+	<TitleContent>
+		Login
+	</TitleContent>
+
+	<DialogContent>
+		<MudText Typo="Typo.body2" Color="Color.Error">Sei sicuro di voler effettuare il logout?</MudText>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Log out</MudButton>
+	</DialogActions>
+
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	private IMudDialogInstance MudDialog { get; set; } = null!;
+
+	private async Task Submit()
+	{
+		await _authService.LogoutAsync();
+
+		MudDialog.Close(DialogResult.Ok(true));
+
+		StateHasChanged();
+
+		//_navigationManager.NavigateTo("/");
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

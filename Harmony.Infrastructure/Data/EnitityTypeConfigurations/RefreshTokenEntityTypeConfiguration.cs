@@ -8,6 +8,8 @@ public class RefreshTokenEntityTypeConfiguration : IEntityTypeConfiguration<Refr
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
+        builder.ToTable("RefreshTokens");
+
         // PK
         builder.HasKey(rt => rt.Id);
 
@@ -17,9 +19,6 @@ public class RefreshTokenEntityTypeConfiguration : IEntityTypeConfiguration<Refr
             .HasMaxLength(256);
 
         builder.Property(rt => rt.ExpiresAt)
-            .IsRequired();
-
-        builder.Property(rt => rt.IsRevoked)
             .IsRequired();
 
         builder.Property(rt => rt.UserId)

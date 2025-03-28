@@ -20,7 +20,7 @@ public class AuthenticationHandler : DelegatingHandler
     {
         string? jwt = await _authenticationService.GetJwtAsync();
 
-        bool isToServer = request.RequestUri?.AbsoluteUri.StartsWith(_configuration["HarmonyURL"] ?? throw new NullReferenceException()) ?? false;
+        bool isToServer = request.RequestUri?.AbsoluteUri.StartsWith(_configuration["HarmonyAPI"] ?? throw new NullReferenceException("HarmonyAPI value was not found in appsettings.json")) ?? false;
 
         if (isToServer && !string.IsNullOrEmpty(jwt))
         {

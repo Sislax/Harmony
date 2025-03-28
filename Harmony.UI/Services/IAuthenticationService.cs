@@ -6,6 +6,7 @@ namespace Harmony.UI.Services
     {
         ValueTask<string?> GetJwtAsync();
         Task<bool> LoginAsync(LoginRequestModel loginRequest);
+        Task<bool> RegisterAsync(RegisterRequestModel registerRequest);
         Task LogoutAsync();
         Task<bool> RefreshAsync();
     }

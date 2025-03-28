@@ -29,7 +29,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         _context.Add(refreshToken);
     }
 
-    public void UpdateRange(List<RefreshToken> refreshTokens)
+    public void UpdateRange(IEnumerable<RefreshToken> refreshTokens)
     {
         _context.UpdateRange(refreshTokens);
     }
@@ -37,5 +37,10 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     public void UpdateRefreshToken(RefreshToken refreshToken)
     {
         _context.Update(refreshToken);
+    }
+
+    public void RemoveRange(IEnumerable<RefreshToken> refreshTokens)
+    {
+        _context.RemoveRange(refreshTokens);
     }
 }

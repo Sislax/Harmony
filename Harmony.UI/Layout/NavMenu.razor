@@ -1,39 +1,107 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Harmony.UI</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+﻿@using Harmony.UI.Pages
+@inject IDialogService _dialogService
+
+<div class="top-row ps-3 navbar navbar-dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="">Harmony.UI</a>
+		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</div>
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
+	<nav class="nav flex-column">
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+			</NavLink>
+		</div>
+
+		@* <div class="nav-item px-3"> *@
+			@* <NavLink class="nav-link" href=""> *@
+				@* <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Not Implemented *@
+			@* </NavLink> *@
+		@* </div> *@
+
+		@* <div class="nav-item px-3"> *@
+			@* <NavLink class="nav-link" href=""> *@
+				@* <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Not Implemented *@
+			@* </NavLink> *@
+		@* </div> *@
+
+		<AuthorizeView>
+			<NotAuthorized>
+
+				<div class="nav-item px-3">
+					<NavLink class="nav-link" href="/login">
+						<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+					</NavLink>
+				</div>
+
+				<div class="nav-item px-3">
+					<NavLink class="nav-link" href="/register">
+						<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
+					</NavLink>
+				</div>
+
+				<div class="nav-item px-3">
+					<MudButton OnClick="OpenRegisterDialogAsync" Variant="Variant.Outlined" Color="Color.Primary">
+						Register
+					</MudButton>
+				</div>
+
+				<div class="nav-item px-3">
+					<MudButton OnClick="OpenLoginDialogAsync" Variant="Variant.Outlined" Color="Color.Primary">
+						Login
+					</MudButton>
+				</div>
+
+			</NotAuthorized>
+
+			<Authorized>
+
+				<div class="nav-item px-3">
+					<MudButton OnClick="OpenLogoutDialogAsync" Variant="Variant.Outlined" Color="Color.Primary">
+						Logout
+					</MudButton>
+				</div>
+
+			</Authorized>
+		</AuthorizeView>
+	</nav>
 </div>
 
+
 @code {
-    private bool collapseNavMenu = true;
+	private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+	private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+
+	private async Task OpenLoginDialogAsync()
+	{
+		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+		await _dialogService.ShowAsync<LoginDialog>("Login", options);
+	}
+
+	private async Task OpenRegisterDialogAsync()
+	{
+		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+		await _dialogService.ShowAsync<RegisterDialog>("Login", options);
+	}
+
+	private async Task OpenLogoutDialogAsync()
+	{
+		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
+
+		await _dialogService.ShowAsync<LogoutDialog>("Logout", options);
+	}
 }

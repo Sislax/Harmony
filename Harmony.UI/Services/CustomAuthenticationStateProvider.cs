@@ -47,7 +47,7 @@ namespace Harmony.UI.Services
         {
             JwtSecurityToken jwt = new JwtSecurityToken(token);
 
-            return new ClaimsIdentity(jwt.Claims);
+            return new ClaimsIdentity(jwt.Claims, "jwt");
         }
     }
 }
