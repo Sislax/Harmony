@@ -40,7 +40,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             result = await _identityService.CreateUserAsync(
                 new RegisterRequestModel
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = request.RegisterDTO.Id,
                     FirstName = request.RegisterDTO.FirstName,
                     LastName = request.RegisterDTO.LastName,
                     Username = request.RegisterDTO.Username,
@@ -69,7 +69,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             _userRepository.InsertUser(
                 new User
                 {
-                    Id = result.UserId!, // Suppressing Warning because we are sure that userId is not null
+                    Id = request.RegisterDTO.Id,
                     FirstName = request.RegisterDTO.FirstName,
                     LastName = request.RegisterDTO.LastName,
                     Username = request.RegisterDTO.Username,

@@ -27,7 +27,7 @@ public class IdentityServices : IIdentityService
     {
         ApplicationUser newUser = new ApplicationUser
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = registerCredential.Id,
             FirstName = registerCredential.FirstName,
             LastName = registerCredential.LastName,
             UserName = registerCredential.Username,

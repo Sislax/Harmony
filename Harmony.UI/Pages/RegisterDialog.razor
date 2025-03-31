@@ -1,8 +1,6 @@
 ﻿@inject IAuthenticationService _authService
 @inject NavigationManager _navigationManager
 
-@page "/register"
-
 <MudDialog>
 
 	<TitleContent>
@@ -20,7 +18,7 @@
 
 	<DialogActions>
 		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
-		<MudButton Color="Color.Primary" OnClick="Submit">Log in</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Register</MudButton>
 	</DialogActions>
 
 </MudDialog>
@@ -39,11 +37,12 @@
 	{
 		RegisterRequestModel registerRequestModel = new RegisterRequestModel
 			{
-				FirstName = FirstName,
-				LastName = LastName,
-				Username = Username,
-				Email = Email,
-				Password = Password
+				Id = Guid.NewGuid().ToString(),
+				FirstName = this.FirstName,
+				LastName = this.LastName,
+				Username = this.Username,
+				Email = this.Email,
+				Password = this.Password
 			};
 
 		bool isResponseSuccessful = await _authService.RegisterAsync(registerRequestModel);
@@ -56,7 +55,7 @@
 
 		MudDialog.Close(DialogResult.Ok(true));
 
-		_navigationManager.NavigateTo("/");
+		_navigationManager.NavigateTo("/", true);
 	}
 
 	private void Cancel()

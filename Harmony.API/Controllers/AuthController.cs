@@ -43,6 +43,26 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
 
+        bool roleAssigned;
+
+        try
+        {
+            roleAssigned = await _sender.Send(new AssignRoleCommand("RegularUser", registerDTO.Email));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while assigning role to the user with Email '{registerDTO.Email}'. Exception: {ex}", registerDTO.Email, ex);
+
+            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
+        }
+
+        if (!roleAssigned)
+        {
+            _logger.LogWarning("Failed to assign role to the user with email {Email}", registerDTO.Email);
+
+            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
+        }
+
         _logger.LogInformation("User with email {Email} has registered", registerDTO.Email);
 
         return Ok(result);
@@ -94,7 +114,7 @@ public class AuthController : ControllerBase
         {
             result = await _sender.Send(new LogoutCommand(userId));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("Error while logging. Exception: {ex}", ex);
 
