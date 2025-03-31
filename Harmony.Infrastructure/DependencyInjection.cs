@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
@@ -9,10 +9,12 @@ using Harmony.Infrastructure.Repositories;
 using Harmony.Infrastructure.Security;
 using Harmony.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 
 namespace Harmony.Infrastructure;
 
@@ -46,9 +48,34 @@ public static class DependencyInjection
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context => LogAttempt(context.Request.Headers, "OnChallenge"),
+                    OnTokenValidated = context => LogAttempt(context.Request.Headers, "OnTokenValidated")
+                };
             });
-
         return services;
+    }
+
+    private static Task LogAttempt(IHeaderDictionary headers, string eventType)
+    {
+        var authorizationHeader = headers.Authorization.FirstOrDefault();
+        IdentityModelEventSource.ShowPII = true;
+
+        if (authorizationHeader is null)
+        {
+            Console.WriteLine($"{eventType}. JWT not present");
+        }
+        else
+        {
+            string jwtString = authorizationHeader.Substring("Bearer ".Length);
+
+            var jwt = new JwtSecurityToken(jwtString);
+
+            Console.WriteLine($"{eventType}. Expiration: {jwt.ValidTo.ToLongTimeString()}. System time: {DateTime.UtcNow.ToLongTimeString()}");
+        }
+
+        return Task.CompletedTask;
     }
 
     public static IServiceCollection AddIdentity(this IServiceCollection services)

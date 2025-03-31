@@ -19,32 +19,20 @@
 			</NavLink>
 		</div>
 
-		@* <div class="nav-item px-3"> *@
-			@* <NavLink class="nav-link" href=""> *@
-				@* <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Not Implemented *@
-			@* </NavLink> *@
-		@* </div> *@
-
-		@* <div class="nav-item px-3"> *@
-			@* <NavLink class="nav-link" href=""> *@
-				@* <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Not Implemented *@
-			@* </NavLink> *@
-		@* </div> *@
-
 		<AuthorizeView>
 			<NotAuthorized>
 
-				<div class="nav-item px-3">
-					<NavLink class="nav-link" href="/login">
-						<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-					</NavLink>
-				</div>
+				@* <div class="nav-item px-3"> *@
+					@* <NavLink class="nav-link" href="/login"> *@
+						@* <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login *@
+					@* </NavLink> *@
+				@* </div> *@
 
-				<div class="nav-item px-3">
-					<NavLink class="nav-link" href="/register">
-						<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
-					</NavLink>
-				</div>
+				@* <div class="nav-item px-3"> *@
+					@* <NavLink class="nav-link" href="/register"> *@
+						@* <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register *@
+					@* </NavLink> *@
+				@* </div> *@
 
 				<div class="nav-item px-3">
 					<MudButton OnClick="OpenRegisterDialogAsync" Variant="Variant.Outlined" Color="Color.Primary">
@@ -86,22 +74,16 @@
 
 	private async Task OpenLoginDialogAsync()
 	{
-		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
-
-		await _dialogService.ShowAsync<LoginDialog>("Login", options);
+		await _dialogService.ShowAsync<LoginDialog>("Login");
 	}
 
 	private async Task OpenRegisterDialogAsync()
 	{
-		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
-
-		await _dialogService.ShowAsync<RegisterDialog>("Login", options);
+		await _dialogService.ShowAsync<RegisterDialog>("Login");
 	}
 
 	private async Task OpenLogoutDialogAsync()
 	{
-		DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
-
-		await _dialogService.ShowAsync<LogoutDialog>("Logout", options);
+		await _dialogService.ShowAsync<LogoutDialog>("Logout");
 	}
 }

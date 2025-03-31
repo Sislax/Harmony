@@ -34,6 +34,8 @@ builder.Services.AddApplicationServices();
 // Add Services from Infrastructure Layer (DbContext, Identity, Auth, Repositories, Services)
 builder.Services.AddInfrastructure(configuration);
 
+builder.Services.AddAuthorization();
+
 builder.Services.AddControllers();
 
 // Add CORS policy to allow client origin in localhost
@@ -47,7 +49,7 @@ builder.Services.AddCors(policy =>
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -63,7 +65,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapOpenApi();
+    //app.MapOpenApi();
 }
 
 app.UseCors("HarmonyUI");

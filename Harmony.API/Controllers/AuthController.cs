@@ -2,7 +2,6 @@
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.UseCases.Commands.AuthCommands;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -76,8 +75,8 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
     [HttpDelete("logout")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Logout()
     {
         Claim? userId = User.FindFirst(ClaimTypes.NameIdentifier);

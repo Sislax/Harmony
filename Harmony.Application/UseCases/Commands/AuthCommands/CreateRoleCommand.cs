@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Harmony.Application.Common.Interfaces;
+﻿using Harmony.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

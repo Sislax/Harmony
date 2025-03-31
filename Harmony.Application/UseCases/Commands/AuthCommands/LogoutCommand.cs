@@ -40,7 +40,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error revoking refresh tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
+            _logger.LogError("Error deleting refresh tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
 
             throw;
         }
@@ -64,7 +64,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
             throw;
         }
 
-        _logger.LogInformation("Refresh tokens revoked for user with id: {UserId}", request.UserId.Value);
+        _logger.LogInformation("Refresh tokens deleted for user with id: {UserId}", request.UserId.Value);
 
         return true;
     }

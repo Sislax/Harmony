@@ -10,8 +10,11 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField @bind-Value="Email" Label="Outlined" Variant="Variant.Outlined" />
-		<MudTextField @bind-Value="Password" Label="Outlined" Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="FirstName" Placeholder="First Name..." Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="LastName" Placeholder="Last Name..." Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="Username" Placeholder="UserName..." Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="Email" InputType="InputType.Email" Placeholder="Email..." Variant="Variant.Outlined" />
+		<MudTextField @bind-Value="Password" InputType="InputType.Password" Placeholder="Password..." Variant="Variant.Outlined" />
 		<MudText Typo="Typo.body2" Color="Color.Error">@RegisterResult</MudText>
 	</DialogContent>
 

@@ -74,6 +74,8 @@ public class IdentityServices : IIdentityService
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(loginCredentials.Email);
 
+            //PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
+
             if (user == null)
             {
                 _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
@@ -84,7 +86,18 @@ public class IdentityServices : IIdentityService
                 };
             }
 
+            //if (hasher.VerifyHashedPassword(user, user.PasswordHash!, loginCredentials.Password) == PasswordVerificationResult.Failed)
+            //{
+            //    _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
+            //
+            //    return new LoginResponseModel
+            //    {
+            //        IsSucceded = false,
+            //    };
+            //}
+
             result = await _signInManager.PasswordSignInAsync(user.UserName!, loginCredentials.Password, false, false);
+            //await _signInManager.SignInAsync(user, false, "JwtBearer");
         }
         catch(Exception ex)
         {
@@ -96,7 +109,7 @@ public class IdentityServices : IIdentityService
         if (!result.Succeeded)
         {
             _logger.LogError("User not signed in with email: {loginCredentials.Email}", loginCredentials.Email);
-
+        
             return new LoginResponseModel
             {
                 IsSucceded = false,

@@ -1,6 +1,4 @@
-﻿using Harmony.Domain.Entities;
-
-namespace Harmony.Application.Models.AuthResponseModels;
+﻿namespace Harmony.Application.Models.AuthResponseModels;
 
 public class RefreshTokenResponseModel
 {

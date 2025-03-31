@@ -4,16 +4,16 @@
 <MudDialog>
 
 	<TitleContent>
-		Login
+		Logout
 	</TitleContent>
 
 	<DialogContent>
-		<MudText Typo="Typo.body2" Color="Color.Error">Sei sicuro di voler effettuare il logout?</MudText>
+		<MudText Typo="Typo.body2" Color="Color.Primary">Sei sicuro di voler effettuare il logout?</MudText>
 	</DialogContent>
 
 	<DialogActions>
-		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
 		<MudButton Color="Color.Primary" OnClick="Submit">Log out</MudButton>
+		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
 	</DialogActions>
 
 </MudDialog>
@@ -30,7 +30,7 @@
 
 		StateHasChanged();
 
-		//_navigationManager.NavigateTo("/");
+		_navigationManager.NavigateTo("/", true);
 	}
 
 	private void Cancel()
