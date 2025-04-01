@@ -3,26 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Domain", "Harmony.Domain\Harmony.Domain.csproj", "{00EA8559-041B-4E08-8542-9B6280D8D555}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Domain", "src\Harmony.Core\Harmony.Domain\Harmony.Domain.csproj", "{00EA8559-041B-4E08-8542-9B6280D8D555}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Application", "Harmony.Application\Harmony.Application.csproj", "{A461CF0F-FB2C-41CD-A9CD-06B47501E958}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Application", "src\Harmony.Core\Harmony.Application\Harmony.Application.csproj", "{A461CF0F-FB2C-41CD-A9CD-06B47501E958}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Infrastructure", "Harmony.Infrastructure\Harmony.Infrastructure.csproj", "{2E0CAE93-6409-4B15-854C-3F856C8CB6C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Infrastructure", "src\Harmony.Core\Harmony.Infrastructure\Harmony.Infrastructure.csproj", "{2E0CAE93-6409-4B15-854C-3F856C8CB6C4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A461CF0F-FB2C-41CD-A9CD-06B47501E958} = {A461CF0F-FB2C-41CD-A9CD-06B47501E958}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.API", "Harmony.API\Harmony.API.csproj", "{8ED0FD0B-0FF6-4232-8670-D9838DFB73E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.API", "src\Harmony.Core\Harmony.API\Harmony.API.csproj", "{8ED0FD0B-0FF6-4232-8670-D9838DFB73E5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2E0CAE93-6409-4B15-854C-3F856C8CB6C4} = {2E0CAE93-6409-4B15-854C-3F856C8CB6C4}
 		{A461CF0F-FB2C-41CD-A9CD-06B47501E958} = {A461CF0F-FB2C-41CD-A9CD-06B47501E958}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.UI", "Harmony.UI\Harmony.UI.csproj", "{E21BC50F-38B2-4870-B787-6EE42B17050B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.UI", "src\Harmony.Client\Harmony.UI\Harmony.UI.csproj", "{E21BC50F-38B2-4870-B787-6EE42B17050B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harmony.Core", "Harmony.Core", "{D4B6FF7D-5012-41C0-B7CB-C193665ED911}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Harmony.Client", "Harmony.Client", "{F2886D10-192D-43FA-9B50-5AA4CACF18F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{73CBFE11-896D-4C9A-8D3C-1D6493B83728}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,5 +62,7 @@ Global
 		{2E0CAE93-6409-4B15-854C-3F856C8CB6C4} = {D4B6FF7D-5012-41C0-B7CB-C193665ED911}
 		{8ED0FD0B-0FF6-4232-8670-D9838DFB73E5} = {D4B6FF7D-5012-41C0-B7CB-C193665ED911}
 		{E21BC50F-38B2-4870-B787-6EE42B17050B} = {F2886D10-192D-43FA-9B50-5AA4CACF18F0}
+		{D4B6FF7D-5012-41C0-B7CB-C193665ED911} = {73CBFE11-896D-4C9A-8D3C-1D6493B83728}
+		{F2886D10-192D-43FA-9B50-5AA4CACF18F0} = {73CBFE11-896D-4C9A-8D3C-1D6493B83728}
 	EndGlobalSection
 EndGlobal
