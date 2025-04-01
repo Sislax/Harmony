@@ -73,8 +73,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
                     FirstName = request.RegisterDTO.FirstName,
                     LastName = request.RegisterDTO.LastName,
                     Username = request.RegisterDTO.Username,
-                    Email = request.RegisterDTO.Email,
-                    CreatedAt = DateTime.Now
+                    Email = request.RegisterDTO.Email
                 }
             );
             await _unitOfWork.SaveChangesAsync();

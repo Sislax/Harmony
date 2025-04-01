@@ -10,6 +10,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public readonly DbContextOptions<ApplicationDbContext> _options;
     public DbSet<User> DomainUsers { get; set; }
+    public DbSet<Server> Servers { get; set; }
+    public DbSet<ServerMember> ServerMembers { get; set; }
+    public DbSet<Channel> Channels { get; set; }
+    public DbSet<ChannelMember> ChannelMembers { get; set; }
+    public DbSet<Message> Messages { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
