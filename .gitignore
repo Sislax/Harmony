@@ -361,4 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Harmony.API/secrets.json
+/src/Harmony.Core/Harmony.API/secrets.json
+/src/Harmony.Core/Harmony.API/secrets.json
