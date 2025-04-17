@@ -1,52 +1,23 @@
-using Harmony.Application;
-using Harmony.Infrastructure;
-using NLog.Extensions.Logging;
+using Harmony.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Configuration of the app
 
-string environment = builder.Configuration["Environment"] ?? throw new NullReferenceException();
+//string environment = builder.Configuration["Environment"] ?? throw new NullReferenceException();
 
-IConfiguration configuration = new ConfigurationBuilder()
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("secrets.json", optional: false, reloadOnChange: true)
-    .AddEnvironmentVariables()
-    .Build();
+//IConfiguration configuration = new ConfigurationBuilder()
+//    .SetBasePath(builder.Environment.ContentRootPath)
+//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+//    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+//    .AddJsonFile("secrets.json", optional: false, reloadOnChange: true)
+//    .AddEnvironmentVariables()
+//    .Build();
+
+builder.Configuration.AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
 
 // Add services to the container.
-
-// Add Swagger
-builder.Services.AddSwaggerGen();
-
-// Add Logger
-builder.Services.AddLogging(loggingBuilder =>
-{
-    loggingBuilder.ClearProviders();
-    loggingBuilder.AddNLog(configuration);
-});
-
-// Add Services from Application Layer (MediatR, AutoMapper, Validators)
-builder.Services.AddApplicationServices();
-
-// Add Services from Infrastructure Layer (DbContext, Identity, Auth, Repositories, Services)
-builder.Services.AddInfrastructure(configuration);
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddControllers();
-
-// Add CORS policy to allow client origin in localhost
-builder.Services.AddCors(policy =>
-{
-    policy.AddPolicy("HarmonyUI", builder => builder.WithOrigins("https://localhost:7222")
-    .SetIsOriginAllowed((host) => true)
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-});
+builder.Services.AddPresentation(builder.Configuration);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
@@ -67,6 +38,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     //app.MapOpenApi();
 }
+
+app.UseExceptionHandler("/error");
 
 app.UseCors("HarmonyUI");
 

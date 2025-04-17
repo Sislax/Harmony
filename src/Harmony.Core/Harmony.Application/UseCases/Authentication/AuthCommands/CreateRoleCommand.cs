@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Harmony.Application.UseCases.Commands.AuthCommands;
+namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
 public class CreateRoleCommand : IRequest<bool>
 {

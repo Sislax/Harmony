@@ -25,7 +25,7 @@ public class IdentityServices : IIdentityService
 
     public async Task<RegisterResponseModel> CreateUserAsync(RegisterRequestModel registerCredential)
     {
-        ApplicationUser newUser = new ApplicationUser
+        ApplicationUser newUser = new()
         {
             Id = registerCredential.Id,
             FirstName = registerCredential.FirstName,
@@ -34,27 +34,13 @@ public class IdentityServices : IIdentityService
             Email = registerCredential.Email
         };
 
-        IdentityResult result;
-
-        try
-        {
-            result = await _userManager.CreateAsync(newUser, registerCredential.Password);
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError("Error creating user with email: {newUser.Email}. Exception: {ex}", newUser.Email, ex);
-
-            throw;
-        }
+        IdentityResult result = await _userManager.CreateAsync(newUser, registerCredential.Password);
 
         if (!result.Succeeded)
         {
-            _logger.LogWarning("User not created with email: {newUser.Email}", newUser.Email);
+            _logger.LogWarning("User not created with email: {newUser.Email}. Error: {result.Errors.First().Description}", newUser.Email, result.Errors.First().Description);
 
-            return new RegisterResponseModel
-            {
-                IsSucceded = false,
-            };
+            throw new UserIdentityException(result.Errors.First().Description);
         }
 
         _logger.LogInformation("User created with email: {newUser.Email}", newUser.Email);
@@ -68,52 +54,22 @@ public class IdentityServices : IIdentityService
 
     public async Task<LoginResponseModel> SignInUserAsync(LoginRequestModel loginCredentials)
     {
-        SignInResult result;
+        ApplicationUser? user = await _userManager.FindByEmailAsync(loginCredentials.Email);
 
-        try
+        if (user == null)
         {
-            ApplicationUser? user = await _userManager.FindByEmailAsync(loginCredentials.Email);
+            _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
 
-            //PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
-
-            if (user == null)
-            {
-                _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
-
-                return new LoginResponseModel
-                {
-                    IsSucceded = false,
-                };
-            }
-
-            //if (hasher.VerifyHashedPassword(user, user.PasswordHash!, loginCredentials.Password) == PasswordVerificationResult.Failed)
-            //{
-            //    _logger.LogError("User not found with email: {loginCredentials.Email}", loginCredentials.Email);
-            //
-            //    return new LoginResponseModel
-            //    {
-            //        IsSucceded = false,
-            //    };
-            //}
-
-            result = await _signInManager.PasswordSignInAsync(user.UserName!, loginCredentials.Password, false, false);
-            //await _signInManager.SignInAsync(user, false, "JwtBearer");
+            throw new NotFoundException($"User with email {loginCredentials.Email} does not exist");
         }
-        catch(Exception ex)
-        {
-            _logger.LogError("Error signing in user with email: {loginCredentials.Email}. Exception: {ex}", loginCredentials.Email, ex);
 
-            throw;
-        }
+        SignInResult result = await _signInManager.PasswordSignInAsync(user.UserName!, loginCredentials.Password, false, false);
 
         if (!result.Succeeded)
         {
             _logger.LogError("User not signed in with email: {loginCredentials.Email}", loginCredentials.Email);
-        
-            return new LoginResponseModel
-            {
-                IsSucceded = false,
-            };
+
+            throw new UserIdentityException($"An error occurred during the sign in. Try again later...");
         }
 
         _logger.LogInformation("User signed in with email: {loginCredentialss.Email}", loginCredentials.Email);
@@ -121,6 +77,7 @@ public class IdentityServices : IIdentityService
         return new LoginResponseModel
         {
             IsSucceded = true,
+            UserId = user.Id
         };
     }
 
@@ -132,7 +89,7 @@ public class IdentityServices : IIdentityService
         {
             applicationUser = await _userManager.FindByEmailAsync(email);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("Error finding user with email: {email}. Exception: {ex}", email, ex);
 
@@ -212,18 +169,7 @@ public class IdentityServices : IIdentityService
 
     public async Task<bool> AssignRoleAsync(string roleName, string userEmail)
     {
-        ApplicationUser? applicationUser;
-
-        try
-        {
-            applicationUser = await _userManager.FindByEmailAsync(userEmail);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error finding user with email: {userEmail}. Exception: {ex}", userEmail, ex);
-
-            throw;
-        }
+        ApplicationUser? applicationUser = await _userManager.FindByEmailAsync(userEmail);
 
         if (applicationUser == null)
         {
@@ -234,18 +180,16 @@ public class IdentityServices : IIdentityService
 
         _logger.LogInformation("User found with email: {userEmail}", userEmail);
 
-        try
-        {
-            await _userManager.AddToRoleAsync(applicationUser, roleName);
+        IdentityResult result = await _userManager.AddToRoleAsync(applicationUser, roleName);
 
-            _logger.LogInformation("Role '{roleName}' assigned correctly to the user with  email '{userEmail}'", roleName, userEmail);
-        }
-        catch (Exception ex)
+        if (!result.Succeeded)
         {
-            _logger.LogError("Error assigning the role '{roleName}' to the user with email '{userEmail}'. Exception: {ex}", roleName, userEmail, ex);
+            _logger.LogError("Error occurred during the role assignment. Role: {roleName}, User: {applicationUser}", roleName, applicationUser);
 
-            throw;
+            throw new UserIdentityException("Error during the creation of the user.");
         }
+
+        _logger.LogInformation("Role '{roleName}' assigned correctly to the user with  email '{userEmail}'", roleName, userEmail);
 
         return true;
     }

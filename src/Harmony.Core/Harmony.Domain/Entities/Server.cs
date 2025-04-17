@@ -5,13 +5,7 @@ namespace Harmony.Domain.Entities;
 public class Server : BaseEntity<Guid>
 {
     public required string ServerName { get; set; }
-    public required string ServerOwnerId { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.Now;
-
-    /// <summary>
-    /// Navigation Property one to many
-    /// </summary>
-    public User ServerOwner { get; set; } = null!;
 
     /// <summary>
     /// Skip Navigation Property many to many

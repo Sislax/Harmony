@@ -6,7 +6,7 @@ using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Harmony.Application.UseCases.Commands.AuthCommands;
+namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
 public class RefreshTokenCommand : IRequest<RefreshTokenResponseModel>
 {
@@ -50,7 +50,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
             throw;
         }
 
-        if(storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow)
+        if (storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow)
         {
             _logger.LogWarning("Refresh token is invalid or expired");
 
@@ -80,7 +80,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         {
             user = await _identityService.GetUserByIdAsync(storedToken.UserId);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("An error occured while getting user with Id {UserId}. Exception: {ex}", storedToken.UserId, ex);
 

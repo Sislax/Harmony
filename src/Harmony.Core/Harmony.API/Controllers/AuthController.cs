@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Harmony.Application.Models.AuthResponseModels;
-using Harmony.Application.UseCases.Commands.AuthCommands;
+using Harmony.Application.UseCases.Authentication.AuthCommands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,45 +23,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerDTO)
     {
-        RegisterResponseModel result;
-
-        try
-        {
-            result = await _sender.Send(new RegisterCommand(registerDTO));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error while register the user with Email '{registerDTO.Email}'. Exception: {ex}", registerDTO.Email, ex);
-
-            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
-        }
-
-        if (!result.IsSucceded)
-        {
-            _logger.LogWarning("User with email {Email} failed to register", registerDTO.Email);
-
-            return BadRequest(result);
-        }
-
-        bool roleAssigned;
-
-        try
-        {
-            roleAssigned = await _sender.Send(new AssignRoleCommand("RegularUser", registerDTO.Email));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error while assigning role to the user with Email '{registerDTO.Email}'. Exception: {ex}", registerDTO.Email, ex);
-
-            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
-        }
-
-        if (!roleAssigned)
-        {
-            _logger.LogWarning("Failed to assign role to the user with email {Email}", registerDTO.Email);
-
-            return StatusCode(500, "Ops... Something went wrong. Registration failed.");
-        }
+        RegisterResponseModel result = await _sender.Send(new RegisterCommand(registerDTO));
 
         _logger.LogInformation("User with email {Email} has registered", registerDTO.Email);
 
@@ -71,26 +33,16 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestModel loginDTO)
     {
-        LoginResponseModel result;
+        LoginResponseModel result = await _sender.Send(new LoginCommand(loginDTO));
 
-        try
-        {
-            result = await _sender.Send(new LoginCommand(loginDTO));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error while logging in the user with Email '{loginDTO.Email}'. Exception: {ex}", loginDTO.Email, ex);
-
-            return StatusCode(500, "Ops... Sometihing went wrong. Login failed.");
-        }
+        _logger.LogInformation("User with email {Email} has logged in", loginDTO.Email);
 
         if (!result.IsSucceded)
         {
             _logger.LogWarning("User with email {Email} failed to login", loginDTO.Email);
 
-            return BadRequest(result);
+            return Problem(statusCode: 500, title: "An unknown error occurred during the login process.");
         }
-        _logger.LogInformation("User with email {Email} has logged in", loginDTO.Email);
 
         return Ok(result);
     }

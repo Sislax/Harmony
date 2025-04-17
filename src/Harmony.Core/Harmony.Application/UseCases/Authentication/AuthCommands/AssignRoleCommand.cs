@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Harmony.Application.UseCases.Commands.AuthCommands;
+namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
 public class AssignRoleCommand : IRequest<bool>
 {
@@ -29,20 +29,9 @@ public class AssignRoleCommandHandler : IRequestHandler<AssignRoleCommand, bool>
 
     public async Task<bool> Handle(AssignRoleCommand request, CancellationToken cancellationToken)
     {
-        bool result;
+        bool result = await _identityService.AssignRoleAsync(request.RoleName, request.UserEmail);
 
-        try
-        {
-            result = await _identityService.AssignRoleAsync(request.RoleName, request.UserEmail);
-
-            _logger.LogInformation("Role '{request.RoleName}' assigned correctly to the user with email {request.UserEmail}", request.RoleName, request.UserEmail);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error assigning role '{request.RoleName}' to the user with email '{request.UserEmail}'. Exception: {ex}", request.RoleName, request.UserEmail, ex);
-
-            throw;
-        }
+        _logger.LogInformation("Role '{request.RoleName}' assigned correctly to the user with email {request.UserEmail}", request.RoleName, request.UserEmail);
 
         return result;
     }

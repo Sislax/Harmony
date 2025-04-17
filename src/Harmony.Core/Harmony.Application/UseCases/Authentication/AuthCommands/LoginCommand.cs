@@ -1,4 +1,5 @@
-﻿using Harmony.Application.Common.Interfaces;
+﻿using Harmony.Application.Common.Exceptions;
+using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
@@ -6,7 +7,7 @@ using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Harmony.Application.UseCases.Commands.AuthCommands;
+namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
 public class LoginCommand : IRequest<LoginResponseModel>
 {
@@ -50,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
         {
             _logger.LogWarning("User with email {Email} failed to login", request.LoginDTO.Email);
 
-            return result;
+            throw new UserIdentityException("User");
         }
 
         UserForTokenDTO user = await _identityService.GetUserByEmailAsync(request.LoginDTO.Email);
@@ -74,7 +75,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
 
         _logger.LogInformation("User with email {Email} has logged in", request.LoginDTO.Email);
 
-        result.UserId = user.Id;
         result.Token = token;
         result.RefreshToken = refreshToken.Token;
 

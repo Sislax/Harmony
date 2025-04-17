@@ -1,16 +1,14 @@
-﻿namespace Harmony.Application.Common.Exceptions;
+﻿using System.Net;
 
-public class BadRequestException : Exception
+namespace Harmony.Application.Common.Exceptions;
+
+public class BadRequestException : Exception, IServiceException
 {
-    public BadRequestException()
-    {
-    }
+    public HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
+
+    public string ErrorMessage => Message;
 
     public BadRequestException(string message) : base(message)
-    {
-    }
-
-    public BadRequestException(string message, Exception innerException) : base(message, innerException)
     {
     }
 }

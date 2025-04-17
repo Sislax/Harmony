@@ -5,7 +5,7 @@ using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Harmony.Application.UseCases.Commands.AuthCommands;
+namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
 public class LogoutCommand : IRequest<bool>
 {
@@ -45,7 +45,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
             throw;
         }
 
-        if(refreshTokens == null)
+        if (refreshTokens == null)
         {
             _logger.LogWarning("No refresh tokens found for user with id: {UserId}", request.UserId.Value);
 
@@ -57,7 +57,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
             _refreshTokenRepository.RemoveRange(refreshTokens);
             await _unitoOfWork.SaveChangesAsync();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError("An error occured while deleting tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
 

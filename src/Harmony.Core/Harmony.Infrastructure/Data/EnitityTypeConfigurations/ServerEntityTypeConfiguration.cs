@@ -18,17 +18,8 @@ public class ServerEntityTypeConfiguration : IEntityTypeConfiguration<Server>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(s => s.ServerOwnerId)
-            .IsRequired();
-
         builder.Property(s => s.CreatedDate)
             .IsRequired();
-
-        // one Server -> one Owner (User). Used for navigation property
-        builder.HasOne(s => s.ServerOwner)
-       .WithMany()
-       .HasForeignKey(s => s.ServerOwnerId)
-       .OnDelete(DeleteBehavior.Restrict);
 
         // many Servers -> many Users
         builder.HasMany(s => s.Users)
