@@ -8,15 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class RefreshTokenCommand : IRequest<RefreshTokenResponseModel>
-{
-    public string RefreshToken { get; set; }
-
-    public RefreshTokenCommand(string refreshToken)
-    {
-        RefreshToken = refreshToken;
-    }
-}
+public record RefreshTokenCommand(string RefreshToken) : IRequest<RefreshTokenResponseModel>;
 
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, RefreshTokenResponseModel>
 {

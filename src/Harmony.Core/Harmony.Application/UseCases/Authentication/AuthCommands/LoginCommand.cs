@@ -9,15 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class LoginCommand : IRequest<LoginResponseModel>
-{
-    public LoginRequestModel LoginDTO { get; set; }
-
-    public LoginCommand(LoginRequestModel loginDTO)
-    {
-        LoginDTO = loginDTO;
-    }
-}
+public record LoginCommand(LoginRequestModel LoginDTO) : IRequest<LoginResponseModel>;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseModel>
 {

@@ -169,7 +169,7 @@ public class IdentityServices : IIdentityService
         {
             _logger.LogError("Error occurred during the role assignment. Role: {roleName}, User: {applicationUser}", roleName, applicationUser);
 
-            throw new UserIdentityException("Error during the creation of the user.");
+            throw new UserIdentityException($"Error occurred during the role assignment. Error: {result.Errors.First()}");
         }
 
         _logger.LogInformation("Role '{roleName}' assigned correctly to the user with  email '{userEmail}'", roleName, userEmail);

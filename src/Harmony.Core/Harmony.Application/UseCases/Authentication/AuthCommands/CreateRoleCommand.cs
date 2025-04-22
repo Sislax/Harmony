@@ -4,15 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class CreateRoleCommand : IRequest
-{
-    public string RoleName { get; set; }
-
-    public CreateRoleCommand(string roleName)
-    {
-        RoleName = roleName;
-    }
-}
+public record CreateRoleCommand(string RoleName) : IRequest;
 
 public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand>
 {

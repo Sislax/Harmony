@@ -7,15 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class LogoutCommand : IRequest<bool>
-{
-    public Claim UserId { get; set; }
-
-    public LogoutCommand(Claim userId)
-    {
-        UserId = userId;
-    }
-}
+public record LogoutCommand(Claim UserId) : IRequest<bool>;
 
 public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
 {

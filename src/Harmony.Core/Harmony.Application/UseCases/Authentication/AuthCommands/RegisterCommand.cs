@@ -3,21 +3,12 @@ using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
-using Harmony.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class RegisterCommand : IRequest<RegisterResponseModel>
-{
-    public RegisterRequestModel RegisterDTO { get; set; }
-
-    public RegisterCommand(RegisterRequestModel registerDTO)
-    {
-        RegisterDTO = registerDTO;
-    }
-}
+public record RegisterCommand(RegisterRequestModel RegisterDTO) : IRequest<RegisterResponseModel>;
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponseModel>
 {
@@ -82,7 +73,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         try
         {
             // Assign Default Role to User
-            await _identityService.AssignRoleAsync(UserRole.User.ToString(), request.RegisterDTO.Email);
+            await _identityService.AssignRoleAsync("RegularUser", request.RegisterDTO.Email);
         }
         catch (Exception ex)
         {
