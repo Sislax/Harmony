@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Harmony.Application.Common.Exceptions;
+namespace Harmony.Application.Common.Exceptions.UserExceptions;
 
 public class UserDuplicateException : Exception, IServiceException
 {

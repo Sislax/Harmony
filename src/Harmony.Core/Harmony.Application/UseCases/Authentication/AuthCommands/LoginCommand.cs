@@ -1,4 +1,4 @@
-﻿using Harmony.Application.Common.Exceptions;
+﻿using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
@@ -57,21 +57,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseMo
         UserForTokenDTO user = await _identityService.GetUserByEmailAsync(request.LoginDTO.Email);
 
         string token = _tokenGenerator.GenerateJwtToken(user);
+
         RefreshToken refreshToken = _tokenGenerator.GenerateRefreshToken(user);
 
-        try
-        {
-            // Saving Refresh Token in the database
-            _refreshTokenRepository.InsertRefreshToken(refreshToken);
+        // Saving Refresh Token in the database
+        _refreshTokenRepository.InsertRefreshToken(refreshToken);
 
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occured while saving refresh token for user with email {Email}. Exception: {ex}", request.LoginDTO.Email, ex);
-
-            throw;
-        }
+        await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation("User with email {Email} has logged in", request.LoginDTO.Email);
 

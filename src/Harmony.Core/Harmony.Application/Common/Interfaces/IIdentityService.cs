@@ -9,6 +9,6 @@ public interface IIdentityService
     public Task<LoginResponseModel> SignInUserAsync(LoginRequestModel loginCredentials);
     public Task<UserForTokenDTO> GetUserByEmailAsync(string email);
     public Task<UserForTokenDTO> GetUserByIdAsync(string id);
-    public Task<bool> CreateRoleAsync(string roleName);
-    public Task<bool> AssignRoleAsync(string roleName, string userEmail);
+    public Task CreateRoleAsync(string roleName);
+    public Task AssignRoleAsync(string roleName, string userEmail);
 }

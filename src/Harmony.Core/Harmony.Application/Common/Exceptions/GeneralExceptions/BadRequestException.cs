@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Harmony.Application.Common.Exceptions;
+namespace Harmony.Application.Common.Exceptions.GeneralExceptions;
 
 public class BadRequestException : Exception, IServiceException
 {

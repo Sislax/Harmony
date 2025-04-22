@@ -37,13 +37,6 @@ public class AuthController : ControllerBase
 
         _logger.LogInformation("User with email {Email} has logged in", loginDTO.Email);
 
-        if (!result.IsSucceded)
-        {
-            _logger.LogWarning("User with email {Email} failed to login", loginDTO.Email);
-
-            return Problem(statusCode: 500, title: "An unknown error occurred during the login process.");
-        }
-
         return Ok(result);
     }
 
@@ -60,18 +53,7 @@ public class AuthController : ControllerBase
             return Unauthorized("User is not authenticated");
         }
 
-        bool result;
-
-        try
-        {
-            result = await _sender.Send(new LogoutCommand(userId));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error while logging. Exception: {ex}", ex);
-
-            return StatusCode(500, "Ops... Something went wrong. Logout failed.");
-        }
+        bool result = await _sender.Send(new LogoutCommand(userId));
 
         if (!result)
         {
@@ -88,18 +70,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] string refreshToken)
     {
-        RefreshTokenResponseModel result;
-
-        try
-        {
-            result = await _sender.Send(new RefreshTokenCommand(refreshToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error while refresh the token. Exception: {ex}", ex);
-
-            return StatusCode(500, "Ops... Something went wrong. Refresh failed.");
-        }
+        RefreshTokenResponseModel result = await _sender.Send(new RefreshTokenCommand(refreshToken));
 
         if (!result.IsSucceded)
         {

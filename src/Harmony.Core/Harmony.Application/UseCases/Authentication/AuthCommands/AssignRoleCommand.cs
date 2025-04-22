@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class AssignRoleCommand : IRequest<bool>
+public class AssignRoleCommand : IRequest
 {
     public string RoleName { get; set; }
     public string UserEmail { get; set; }
@@ -16,7 +16,7 @@ public class AssignRoleCommand : IRequest<bool>
     }
 }
 
-public class AssignRoleCommandHandler : IRequestHandler<AssignRoleCommand, bool>
+public class AssignRoleCommandHandler : IRequestHandler<AssignRoleCommand>
 {
     private readonly IIdentityService _identityService;
     private readonly ILogger<AssignRoleCommandHandler> _logger;
@@ -27,12 +27,10 @@ public class AssignRoleCommandHandler : IRequestHandler<AssignRoleCommand, bool>
         _logger = logger;
     }
 
-    public async Task<bool> Handle(AssignRoleCommand request, CancellationToken cancellationToken)
+    public async Task Handle(AssignRoleCommand request, CancellationToken cancellationToken)
     {
-        bool result = await _identityService.AssignRoleAsync(request.RoleName, request.UserEmail);
+        await _identityService.AssignRoleAsync(request.RoleName, request.UserEmail);
 
         _logger.LogInformation("Role '{request.RoleName}' assigned correctly to the user with email {request.UserEmail}", request.RoleName, request.UserEmail);
-
-        return result;
     }
 }

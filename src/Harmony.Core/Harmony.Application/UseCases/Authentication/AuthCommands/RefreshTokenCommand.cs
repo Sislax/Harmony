@@ -37,18 +37,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
     public async Task<RefreshTokenResponseModel> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        RefreshToken? storedToken;
-
-        try
-        {
-            storedToken = await _refreshTokenRepository.GetRefreshToken(request.RefreshToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occured while getting refresh token with token {Token}. Exception: {ex}", request.RefreshToken, ex);
-
-            throw;
-        }
+        RefreshToken? storedToken = await _refreshTokenRepository.GetRefreshToken(request.RefreshToken);
 
         if (storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow)
         {
@@ -62,30 +51,10 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         _tokenGenerator.ExtendRefreshTokenExpiration(storedToken);
 
-        try
-        {
-            _refreshTokenRepository.UpdateRefreshToken(storedToken);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occured while revoking refresh token with token {Token}. Exception: {ex}", request.RefreshToken, ex);
+        _refreshTokenRepository.UpdateRefreshToken(storedToken);
+        await _unitOfWork.SaveChangesAsync();
 
-            throw;
-        }
-
-        UserForTokenDTO user;
-
-        try
-        {
-            user = await _identityService.GetUserByIdAsync(storedToken.UserId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occured while getting user with Id {UserId}. Exception: {ex}", storedToken.UserId, ex);
-
-            throw;
-        }
+        UserForTokenDTO user = await _identityService.GetUserByIdAsync(storedToken.UserId);
 
         return new RefreshTokenResponseModel
         {

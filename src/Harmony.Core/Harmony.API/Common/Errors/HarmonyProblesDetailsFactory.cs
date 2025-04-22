@@ -99,8 +99,8 @@ public sealed class HarmonyProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        // Add here custom property for the problem details
-        problemDetails.Extensions.Add("customProperty", "customValue");
+        // Custom property for the problem details
+        //problemDetails.Extensions.Add("customProperty", "customValue");
 
         _configure?.Invoke(new() { HttpContext = httpContext!, ProblemDetails = problemDetails });
     }

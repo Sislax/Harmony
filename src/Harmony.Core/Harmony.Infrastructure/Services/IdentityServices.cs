@@ -1,4 +1,6 @@
-﻿using Harmony.Application.Common.Exceptions;
+﻿using Harmony.Application.Common.Exceptions.GeneralExceptions;
+using Harmony.Application.Common.Exceptions.RoleExceptions;
+using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
@@ -83,18 +85,7 @@ public class IdentityServices : IIdentityService
 
     public async Task<UserForTokenDTO> GetUserByEmailAsync(string email)
     {
-        ApplicationUser? applicationUser;
-
-        try
-        {
-            applicationUser = await _userManager.FindByEmailAsync(email);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error finding user with email: {email}. Exception: {ex}", email, ex);
-
-            throw;
-        }
+        ApplicationUser? applicationUser = await _userManager.FindByEmailAsync(email);
 
         if (applicationUser == null)
         {
@@ -117,18 +108,7 @@ public class IdentityServices : IIdentityService
 
     public async Task<UserForTokenDTO> GetUserByIdAsync(string id)
     {
-        ApplicationUser? applicationUser;
-
-        try
-        {
-            applicationUser = await _userManager.FindByIdAsync(id);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error finding user with Id: {id}. Exception: {ex}", id, ex);
-
-            throw;
-        }
+        ApplicationUser? applicationUser = await _userManager.FindByIdAsync(id);
 
         if (applicationUser == null)
         {
@@ -149,25 +129,28 @@ public class IdentityServices : IIdentityService
         };
     }
 
-    public async Task<bool> CreateRoleAsync(string roleName)
+    public async Task CreateRoleAsync(string roleName)
     {
-        try
-        {
-            await _roleManager.CreateAsync(new IdentityRole(roleName));
+        IdentityRole? existingRole = await _roleManager.FindByNameAsync(roleName);
 
-            _logger.LogInformation("Role '{roleName}' created correctly", roleName);
-        }
-        catch (Exception ex)
+        if (existingRole != null)
         {
-            _logger.LogError("Error creating the role '{roleName}'. Exception: {ex}", roleName, ex);
-
-            throw;
+            throw new DuplicateRoleException($"Role with name: {roleName} already exists.");
         }
 
-        return true;
+        IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+        if (!result.Succeeded)
+        {
+            _logger.LogError("Error during the role creation. Error: {result.Errors.First()}", result.Errors.First());
+
+            throw new RoleIdentityException("An unknown error has occurred during the role creation.");
+        }
+
+        _logger.LogInformation("Role '{roleName}' created correctly", roleName);
     }
 
-    public async Task<bool> AssignRoleAsync(string roleName, string userEmail)
+    public async Task AssignRoleAsync(string roleName, string userEmail)
     {
         ApplicationUser? applicationUser = await _userManager.FindByEmailAsync(userEmail);
 
@@ -190,7 +173,5 @@ public class IdentityServices : IIdentityService
         }
 
         _logger.LogInformation("Role '{roleName}' assigned correctly to the user with  email '{userEmail}'", roleName, userEmail);
-
-        return true;
     }
 }

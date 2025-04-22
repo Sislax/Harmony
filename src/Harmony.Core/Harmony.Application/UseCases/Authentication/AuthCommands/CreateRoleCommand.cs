@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public class CreateRoleCommand : IRequest<bool>
+public class CreateRoleCommand : IRequest
 {
     public string RoleName { get; set; }
 
@@ -14,7 +14,7 @@ public class CreateRoleCommand : IRequest<bool>
     }
 }
 
-public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, bool>
+public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand>
 {
     private readonly IIdentityService _identityService;
     private readonly ILogger<CreateRoleCommandHandler> _logger;
@@ -25,23 +25,10 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, bool>
         _logger = logger;
     }
 
-    public async Task<bool> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
-        bool result;
+        await _identityService.CreateRoleAsync(request.RoleName);
 
-        try
-        {
-            result = await _identityService.CreateRoleAsync(request.RoleName);
-
-            _logger.LogInformation("Role '{request.RoleName}' created correctly", request.RoleName);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error creating role '{request.RoleName}'. Exception: {ex}", request.RoleName, ex);
-
-            throw;
-        }
-
-        return result;
+        _logger.LogInformation("Role '{request.RoleName}' created correctly", request.RoleName);
     }
 }

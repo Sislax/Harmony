@@ -4,16 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Configuration of the app
 
-//string environment = builder.Configuration["Environment"] ?? throw new NullReferenceException();
-
-//IConfiguration configuration = new ConfigurationBuilder()
-//    .SetBasePath(builder.Environment.ContentRootPath)
-//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-//    .AddJsonFile("secrets.json", optional: false, reloadOnChange: true)
-//    .AddEnvironmentVariables()
-//    .Build();
-
 builder.Configuration.AddJsonFile("secrets.json", optional: false, reloadOnChange: true);
 
 // Add services to the container.

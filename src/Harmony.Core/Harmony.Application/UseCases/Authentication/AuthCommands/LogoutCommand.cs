@@ -32,18 +32,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
 
     public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        List<RefreshToken>? refreshTokens;
-
-        try
-        {
-            refreshTokens = await _refreshTokenRepository.GetAllUserRefreshToken(request.UserId.Value);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error deleting refresh tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
-
-            throw;
-        }
+        List<RefreshToken>? refreshTokens = await _refreshTokenRepository.GetAllUserRefreshToken(request.UserId.Value);
 
         if (refreshTokens == null)
         {
@@ -52,17 +41,8 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
             return false;
         }
 
-        try
-        {
-            _refreshTokenRepository.RemoveRange(refreshTokens);
-            await _unitoOfWork.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occured while deleting tokens for user with id: {UserId}. Exception: {ex}", request.UserId.Value, ex);
-
-            throw;
-        }
+        _refreshTokenRepository.RemoveRange(refreshTokens);
+        await _unitoOfWork.SaveChangesAsync();
 
         _logger.LogInformation("Refresh tokens deleted for user with id: {UserId}", request.UserId.Value);
 

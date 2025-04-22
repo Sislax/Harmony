@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-using System.Transactions;
-using Harmony.Application.Common.Exceptions;
+﻿using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
@@ -81,17 +79,18 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
             }
         );
 
-        // Assign Default Role to User
-        bool assignRoleResult = await _identityService.AssignRoleAsync(UserRole.User.ToString(), request.RegisterDTO.Email);
-
-        // If assignment is not succeded, rollback and return failure response
-        if (!assignRoleResult)
+        try
         {
+            // Assign Default Role to User
+            await _identityService.AssignRoleAsync(UserRole.User.ToString(), request.RegisterDTO.Email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error during the assignment of the default role. Exception: {ex}", ex);
+
             await _unitOfWork.RollbackTransactionAsync();
 
-            _logger.LogError("Error during role assignment to the user. Transaction rollback executed.");
-
-            throw new UserIdentityException("An unknown error has occurred during the user creation");
+            throw new UserIdentityException($"{ex.Message}");
         }
 
         await _unitOfWork.SaveChangesAsync();
