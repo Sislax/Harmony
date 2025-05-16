@@ -37,7 +37,7 @@ public static class DependencyInjection
     {
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
 
-        services.AddSingleton<ITokenGenerator, TokenGenerator>();
+        services.AddSingleton<ITokenGenerator, TokenGeneratorService>();
 
         services.ConfigureOptions<JwtTokenValidationConfiguration>()
             .AddAuthentication(options =>
@@ -129,6 +129,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IServerRepository, ServerRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

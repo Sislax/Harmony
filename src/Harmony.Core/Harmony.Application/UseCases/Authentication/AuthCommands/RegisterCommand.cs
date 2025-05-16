@@ -1,6 +1,6 @@
 ﻿using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
-using Harmony.Application.Models.AuthResponseModels;
+using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public record RegisterCommand(RegisterRequestModel RegisterDTO) : IRequest<RegisterResponseModel>;
+public record RegisterCommand(RegisterRequestDTO RegisterDTO) : IRequest<RegisterResponseDTO>;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponseModel>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterResponseDTO>
 {
     private readonly IIdentityService _identityService;
     private readonly IUserRepository _userRepository;
@@ -24,7 +24,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
-    public async Task<RegisterResponseModel> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterResponseDTO> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         if(await _userRepository.GetUserByEmail(request.RegisterDTO.Email) != null)
         {
@@ -34,8 +34,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         await _unitOfWork.BeginTransactionAsync();
 
         // Creates the ApplicationUser (IdentityUser)
-        RegisterResponseModel createUserResult = await _identityService.CreateUserAsync(
-                new RegisterRequestModel
+        RegisterResponseDTO createUserResult = await _identityService.CreateUserAsync(
+                new RegisterRequestDTO
                 {
                     Id = request.RegisterDTO.Id,
                     FirstName = request.RegisterDTO.FirstName,

@@ -1,7 +1,7 @@
 ﻿@inject IAuthenticationService _authService
 @inject NavigationManager _navigationManager
 
-<MudDialog>
+@* <MudDialog>
 
 	<TitleContent>
 		Login
@@ -19,6 +19,45 @@
 		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
 	</DialogActions>
 
+</MudDialog> *@
+
+<MudDialog MaxWidth="MaxWidth.Small" FullWidth="true" Elevation="24">
+	<TitleContent>
+        <MudText Typo="Typo.h5">Login</MudText>
+    </TitleContent>
+
+    <DialogContent>
+        @if (!string.IsNullOrEmpty(LoginResult))
+        {
+            <MudAlert Severity="Severity.Error" Dense="true" Elevation="0" Square="true">
+                @LoginResult
+            </MudAlert>
+        }
+
+        <MudTextField @bind-Value="Email"
+                      Label="Email"
+                      Placeholder="Inserisci la tua email"
+                      Variant="Variant.Outlined"
+                      InputType="InputType.Email"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Email"
+                      Class="mb-4" />
+
+        <MudTextField @bind-Value="Password"
+                      Label="Password"
+                      Placeholder="Inserisci la tua password"
+                      Variant="Variant.Outlined"
+                      InputType="InputType.Password"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Lock"
+                      Class="mb-4" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Accedi</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {

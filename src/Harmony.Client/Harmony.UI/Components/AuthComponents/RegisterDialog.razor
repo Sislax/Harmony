@@ -1,7 +1,7 @@
 ﻿@inject IAuthenticationService _authService
 @inject NavigationManager _navigationManager
 
-<MudDialog>
+@* <MudDialog>
 
 	<TitleContent>
 		Register
@@ -21,6 +21,78 @@
 		<MudButton Color="Color.Primary" OnClick="Submit">Register</MudButton>
 	</DialogActions>
 
+</MudDialog> *@
+
+<MudDialog MaxWidth="MaxWidth.Medium" FullWidth="true" Elevation="24">
+    <TitleContent>
+        <MudText Typo="Typo.h5">Registrazione</MudText>
+    </TitleContent>
+
+    <DialogContent>
+
+        @if (!string.IsNullOrEmpty(RegisterResult))
+        {
+            <MudAlert Severity="Severity.Error" Dense="true" Elevation="0" Square="true">
+                @RegisterResult
+            </MudAlert>
+        }
+
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="FirstName"
+                              Label="Nome"
+                              Placeholder="Mario"
+                              Variant="Variant.Outlined"
+                              Class="mb-4" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="LastName"
+                              Label="Cognome"
+                              Placeholder="Rossi"
+                              Variant="Variant.Outlined"
+                              Class="mb-4" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Username"
+                              Label="Username"
+                              Placeholder="mario123"
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              Class="mb-4" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Email"
+                              Label="Email"
+                              InputType="InputType.Email"
+                              Placeholder="mario@email.com"
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Email"
+                              Class="mb-4" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField @bind-Value="Password"
+                              Label="Password"
+                              InputType="InputType.Password"
+                              Placeholder="••••••••"
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Lock"
+                              Class="mb-4" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+
+    <DialogActions>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Registrati</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {

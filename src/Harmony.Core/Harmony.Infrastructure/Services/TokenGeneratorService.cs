@@ -12,12 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Harmony.Infrastructure.Services;
 
-public class TokenGenerator : ITokenGenerator
+public class TokenGeneratorService : ITokenGenerator
 {
     private readonly JwtSettings _jwtSettings;
-    private readonly ILogger<TokenGenerator> _logger;
+    private readonly ILogger<TokenGeneratorService> _logger;
 
-    public TokenGenerator(IOptions<JwtSettings> jwtSettingsOptions, ILogger<TokenGenerator> logger)
+    public TokenGeneratorService(IOptions<JwtSettings> jwtSettingsOptions, ILogger<TokenGeneratorService> logger)
     {
         _jwtSettings = jwtSettingsOptions.Value;
         _logger = logger;

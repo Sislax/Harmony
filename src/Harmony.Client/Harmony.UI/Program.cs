@@ -21,6 +21,7 @@ builder.Services.AddMudServices();
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<AuthenticationHandler>();
 builder.Services.AddSingleton<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<ServerService>();
 builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
 
 // Configuration for the HTTP Handler

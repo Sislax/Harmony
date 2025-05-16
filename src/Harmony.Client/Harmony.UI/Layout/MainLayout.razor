@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
+@*<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -13,19 +13,50 @@
         <article class="content px-4">
             @Body
 
-            @* Required *@
+            @* Required 
             <MudThemeProvider />
             <MudPopoverProvider />
 
-            @* Needed for dialogs *@
+            @* Needed for dialogs 
             <MudDialogProvider
                 Position="DialogPosition.Center"
                 CloseButton="true"
                 CloseOnEscapeKey="true"
                 BackdropClick="false" />
 
-            @* Needed for snackbars *@
+            @* Needed for snackbars 
             <MudSnackbarProvider />
         </article>
     </main>
+</div>*@
+
+<div class="layout-container">
+    <!-- Sidebar a sinistra (Navbar attuale) -->
+    <div class="left-sidebar">
+        <NavMenu />
+    </div>
+
+    <!-- Contenuto centrale -->
+    <div class="main-content">
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+
+            <MudThemeProvider />
+            <MudPopoverProvider />
+            <MudDialogProvider Position="DialogPosition.Center"
+                               CloseButton="true"
+                               CloseOnEscapeKey="true"
+                               BackdropClick="false" />
+            <MudSnackbarProvider />
+        </article>
+    </div>
+
+    <!-- Server sidebar a destra -->
+    <div class="right-sidebar">
+        <ServerSidebar />
+    </div>
 </div>

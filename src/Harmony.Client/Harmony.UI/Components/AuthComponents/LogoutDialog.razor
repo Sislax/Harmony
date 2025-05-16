@@ -1,7 +1,7 @@
 ﻿@inject IAuthenticationService _authService
 @inject NavigationManager _navigationManager
 
-<MudDialog>
+@* <MudDialog>
 
 	<TitleContent>
 		Logout
@@ -16,6 +16,24 @@
 		<MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
 	</DialogActions>
 
+</MudDialog> *@
+
+<MudDialog MaxWidth="MaxWidth.ExtraSmall" FullWidth="true" Elevation="24">
+	<TitleContent>
+        <MudText Typo="Typo.h6">Conferma Logout</MudText>
+    </TitleContent>
+
+    <DialogContent>
+        <MudText Typo="Typo.body1">
+            Sei sicuro di voler effettuare il logout? Tutti i dati non salvati andranno persi.
+        </MudText>
+    </DialogContent>
+
+    <DialogActions>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Submit">Logout</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {

@@ -2,8 +2,8 @@
 using Harmony.Application.Common.Exceptions.RoleExceptions;
 using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
-using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
+using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Infrastructure.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ public class IdentityServices : IIdentityService
         _logger = logger;
     }
 
-    public async Task<RegisterResponseModel> CreateUserAsync(RegisterRequestModel registerCredential)
+    public async Task<RegisterResponseDTO> CreateUserAsync(RegisterRequestDTO registerCredential)
     {
         ApplicationUser newUser = new()
         {
@@ -47,14 +47,14 @@ public class IdentityServices : IIdentityService
 
         _logger.LogInformation("User created with email: {newUser.Email}", newUser.Email);
 
-        return new RegisterResponseModel
+        return new RegisterResponseDTO
         {
             IsSucceded = true,
             UserId = newUser.Id
         };
     }
 
-    public async Task<LoginResponseModel> SignInUserAsync(LoginRequestModel loginCredentials)
+    public async Task<LoginResponseDTO> SignInUserAsync(LoginRequestDTO loginCredentials)
     {
         ApplicationUser? user = await _userManager.FindByEmailAsync(loginCredentials.Email);
 
@@ -76,7 +76,7 @@ public class IdentityServices : IIdentityService
 
         _logger.LogInformation("User signed in with email: {loginCredentialss.Email}", loginCredentials.Email);
 
-        return new LoginResponseModel
+        return new LoginResponseDTO
         {
             IsSucceded = true,
             UserId = user.Id

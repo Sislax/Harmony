@@ -1,0 +1,62 @@
+﻿using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Models.DTOs.DomainDTOs;
+using Harmony.Domain.Abstractions.RepositoryInterfaces;
+using Harmony.Domain.Entities;
+using Harmony.Domain.Enums;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace Harmony.Application.UseCases.ServersManagement.ServersManagementCommands;
+
+public record CreateServerCommand(ServerDTO ServerDTO) : IRequest;
+
+public class CreateServerCommandHandler : IRequestHandler<CreateServerCommand>
+{
+    private readonly ILogger<CreateServerCommandHandler> _logger;
+    private readonly IServerRepository _serverRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateServerCommandHandler(ILogger<CreateServerCommandHandler> logger, IServerRepository serverRepository, IUnitOfWork unitOfWork)
+    {
+        _logger = logger;
+        _serverRepository = serverRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(CreateServerCommand request, CancellationToken cancellationToken)
+    {
+        Guid idServer = Guid.NewGuid();
+
+        Server newServer = new()
+        {
+            Id = idServer,
+            ServerName = request.ServerDTO.ServerName,
+            ServerMembers =
+            [
+                new ServerMember()
+                {
+                    ServerId = idServer,
+                    // We are sure this OwnerId will be passed by the controller. The exception is just to suppress the warning
+                    UserId = request.ServerDTO.OwnerId ?? throw new ArgumentNullException("Ops... Something went wrong. Try later..."),
+                    UserRole = UserRole.Owner
+                }
+            ],
+            Channels =
+            [
+                new Channel()
+                {
+                    ServerId = idServer,
+                    Id = Guid.NewGuid(),
+                    ChannelName = "Generale",
+                    ChannelType = ChannelType.Text,
+                }
+            ]
+        };
+
+        _serverRepository.Add(newServer);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Server creation successfully completed.");
+    }
+}

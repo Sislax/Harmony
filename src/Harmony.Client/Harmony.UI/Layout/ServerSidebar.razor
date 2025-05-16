@@ -1,0 +1,33 @@
+﻿@using Harmony.UI.Models.DTOs
+@inject CustomAuthenticationStateProvider customAuthStateProvider
+@inject ServerService serverService
+
+<div class="server-sidebar">
+    <ul class="server-list">
+        @if(Servers != null)
+        {
+            @foreach (var server in Servers)
+            {
+                <li class="server-item">
+                    <button class="server-button" title="@server.ServerName">
+                        @server.ServerName
+                    </button>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+@code {
+    private List<ServerDTO>? Servers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await customAuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.Identity!.IsAuthenticated)
+        {
+            Servers = await serverService.GetServersByUser();
+        }
+    }
+}

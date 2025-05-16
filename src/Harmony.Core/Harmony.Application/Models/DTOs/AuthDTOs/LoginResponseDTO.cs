@@ -1,6 +1,6 @@
-﻿namespace Harmony.Application.Models.AuthResponseModels;
+﻿namespace Harmony.Application.Models.DTOs.AuthDTOs;
 
-public class LoginResponseModel
+public class LoginResponseDTO
 {
     public bool IsSucceded { get; set; }
 

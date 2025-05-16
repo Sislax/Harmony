@@ -21,20 +21,20 @@ main {
     align-items: center;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
+.top-row ::deep a, .top-row ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
+.top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+    text-decoration: underline;
+}
 
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-row ::deep a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 @media (max-width: 640.98px) {
     .top-row {
@@ -74,4 +74,54 @@ main {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
+}
+
+/*Stile per il main layout da testare*/
+.layout-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.left-sidebar {
+    width: 200px;
+    background-color: #202225;
+    color: white;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-sidebar {
+    width: 100px;
+    background-color: #2f3136;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.right-sidebar button {
+    margin-top: 10px;
+    width: 50px;
+    height: 50px;
+    background-color: #36393f;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.right-sidebar button:hover {
+    background-color: #7289da;
 }

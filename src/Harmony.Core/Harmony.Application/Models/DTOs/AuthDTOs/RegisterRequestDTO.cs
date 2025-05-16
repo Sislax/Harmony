@@ -1,6 +1,6 @@
-﻿namespace Harmony.Application.Models.AuthResponseModels;
+﻿namespace Harmony.Application.Models.DTOs.AuthDTOs;
 
-public class RegisterRequestModel
+public class RegisterRequestDTO
 {
     public required string Id { get; set; }
     public required string FirstName { get; set; }

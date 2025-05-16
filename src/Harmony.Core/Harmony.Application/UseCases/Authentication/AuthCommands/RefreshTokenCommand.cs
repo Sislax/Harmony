@@ -1,6 +1,6 @@
 ﻿using Harmony.Application.Common.Interfaces;
-using Harmony.Application.Models.AuthResponseModels;
 using Harmony.Application.Models.DTOs;
+using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.Authentication.AuthCommands;
 
-public record RefreshTokenCommand(string RefreshToken) : IRequest<RefreshTokenResponseModel>;
+public record RefreshTokenCommand(string RefreshToken) : IRequest<RefreshTokenResponseDTO>;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, RefreshTokenResponseModel>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, RefreshTokenResponseDTO>
 {
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IIdentityService _identityService;
@@ -27,7 +27,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         _logger = logger;
     }
 
-    public async Task<RefreshTokenResponseModel> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<RefreshTokenResponseDTO> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         RefreshToken? storedToken = await _refreshTokenRepository.GetRefreshToken(request.RefreshToken);
 
@@ -35,7 +35,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         {
             _logger.LogWarning("Refresh token is invalid or expired");
 
-            return new RefreshTokenResponseModel
+            return new RefreshTokenResponseDTO
             {
                 IsSucceded = false
             };
@@ -48,7 +48,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         UserForTokenDTO user = await _identityService.GetUserByIdAsync(storedToken.UserId);
 
-        return new RefreshTokenResponseModel
+        return new RefreshTokenResponseDTO
         {
             IsSucceded = true,
             AccessToken = _tokenGenerator.GenerateJwtToken(user),

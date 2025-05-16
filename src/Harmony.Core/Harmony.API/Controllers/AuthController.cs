@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Harmony.Application.Models.AuthResponseModels;
+using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Application.UseCases.Authentication.AuthCommands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +21,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDTO registerDTO)
     {
-        RegisterResponseModel result = await _sender.Send(new RegisterCommand(registerDTO));
+        RegisterResponseDTO result = await _sender.Send(new RegisterCommand(registerDTO));
 
         _logger.LogInformation("User with email {Email} has registered", registerDTO.Email);
 
@@ -31,9 +31,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequestModel loginDTO)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginDTO)
     {
-        LoginResponseModel result = await _sender.Send(new LoginCommand(loginDTO));
+        LoginResponseDTO result = await _sender.Send(new LoginCommand(loginDTO));
 
         _logger.LogInformation("User with email {Email} has logged in", loginDTO.Email);
 
@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] string refreshToken)
     {
-        RefreshTokenResponseModel result = await _sender.Send(new RefreshTokenCommand(refreshToken));
+        RefreshTokenResponseDTO result = await _sender.Send(new RefreshTokenCommand(refreshToken));
 
         if (!result.IsSucceded)
         {
