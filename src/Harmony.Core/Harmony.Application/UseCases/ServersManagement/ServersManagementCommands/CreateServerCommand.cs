@@ -1,6 +1,6 @@
 ﻿using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs.DomainDTOs.ServerDTOs;
-using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using Harmony.Domain.Enums;
 using MediatR;
@@ -53,7 +53,7 @@ public class CreateServerCommandHandler : IRequestHandler<CreateServerCommand>
             ]
         };
 
-        _serverRepository.Add(newServer);
+        _serverRepository.CreateAsync(newServer);
 
         await _unitOfWork.SaveChangesAsync();
 

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;

@@ -1,4 +1,5 @@
 ﻿using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs.DomainDTOs.ChannelDTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;

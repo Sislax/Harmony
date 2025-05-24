@@ -1,5 +1,6 @@
 ﻿using Harmony.Application.Common.Exceptions.UserExceptions;
 using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs;
 using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;

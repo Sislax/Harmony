@@ -1,6 +1,6 @@
 ﻿using Harmony.Domain.Entities;
 
-namespace Harmony.Domain.Abstractions.RepositoryInterfaces;
+namespace Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 
 public interface IUserRepository
 {

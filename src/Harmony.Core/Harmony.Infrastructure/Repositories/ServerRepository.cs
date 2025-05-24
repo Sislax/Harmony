@@ -1,28 +1,15 @@
-﻿using System.Linq.Expressions;
-using Harmony.Domain.Abstractions.RepositoryInterfaces;
+﻿using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using Harmony.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Harmony.Infrastructure.Repositories;
 
-public class ServerRepository : IServerRepository
+public class ServerRepository : GenericRepository<Server>, IServerRepository
 {
-    public readonly ApplicationDbContext _context;
 
-    public ServerRepository(ApplicationDbContext context)
+    public ServerRepository(ApplicationDbContext context) : base(context)
     {
-        _context = context;
-    }
-
-    public void Add(Server server)
-    {
-        _context.Servers.Add(server);
-    }
-
-    public async Task<Server> GetServerByIdAsync(Guid id)
-    {
-        return await _context.Servers.SingleAsync(s => s.Id == id);
     }
 
     public async Task<List<Server>> GetServersByUserAsync(string userId)
