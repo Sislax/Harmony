@@ -3,7 +3,6 @@ using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs;
 using Harmony.Application.Models.DTOs.AuthDTOs;
-using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -53,8 +52,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDT
 
         RefreshToken refreshToken = _tokenGenerator.GenerateRefreshToken(user);
 
-        // Saving Refresh Token in the database
-        _refreshTokenRepository.InsertRefreshToken(refreshToken);
+        _refreshTokenRepository.Add(refreshToken);
 
         await _unitOfWork.SaveChangesAsync();
 

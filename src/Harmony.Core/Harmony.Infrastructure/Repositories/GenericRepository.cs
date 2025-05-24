@@ -1,11 +1,12 @@
 ﻿using System.Linq.Expressions;
 using Harmony.Application.Common.Interfaces;
+using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Harmony.Infrastructure.Repositories;
 
-public class GenericRepository<TEntity> : Application.Common.Interfaces.RepositoryInterfaces.IGenericRepository<TEntity> where TEntity : class
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
     internal readonly ApplicationDbContext _context;
     internal readonly DbSet<TEntity> _dbSet;
@@ -16,47 +17,17 @@ public class GenericRepository<TEntity> : Application.Common.Interfaces.Reposito
         _dbSet = _context.Set<TEntity>();
     }
 
-    // Considerare bene se fare questo metodo generics per restituire un result di un certo tipo, ad esempio DTO
-    //public virtual async Task<List<TEntity>> GetManyAsync<TResult>(
-    //    Expression<Func<TEntity, bool>>? filter = null,
-    //    Expression<Func<TEntity, TResult>>? select = null,
-    //    Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-    //    string includeProperties = "",
-    //    bool tracked = true)
-    //{
-    //    IQueryable<TEntity> query = _dbSet;
-    //
-    //    if(filter != null)
-    //    {
-    //        query = query.Where(filter);
-    //    }
-    //
-    //    foreach(string includeProperiey in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-    //    {
-    //        query = query.Include(includeProperiey);
-    //    }
-    //
-    //    if(orderBy != null)
-    //    {
-    //        return await orderBy(query).ToListAsync();
-    //    }
-    //    else
-    //    {
-    //        return await query.ToListAsync();
-    //    }
-    //}
-
     public virtual async Task<TFinalResult> GetAsync<TResult, TFinalResult>(
-    Expression<Func<TEntity, bool>>? filter = null,
-    Expression<Func<TEntity, TResult>>? select = null,
-    IQueryMaterializer<TResult, TFinalResult>? materializer = null,
-    Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
-    Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-    bool tracked = true,
-    bool asSplitQuery = false,
-    int? skip = null,
-    int? take = null,
-    CancellationToken cancellationToken = default)
+        Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<TEntity, TResult>>? select = null,
+        IQueryMaterializer<TResult, TFinalResult>? materializer = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        bool tracked = true,
+        bool asSplitQuery = false,
+        int? skip = null,
+        int? take = null,
+        CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity> query = _dbSet;
 
@@ -118,18 +89,33 @@ public class GenericRepository<TEntity> : Application.Common.Interfaces.Reposito
         return await materializer.MaterializeAsync(projected, cancellationToken);
     }
 
-    public virtual void CreateAsync(TEntity entity)
+    public virtual void Add(TEntity entity)
     {
         _dbSet.Add(entity);
     }
 
-    public virtual void UpdateAsync(TEntity entity)
+    public virtual void AddRange(IEnumerable<TEntity> entities)
+    {
+        _dbSet.AddRange(entities);
+    }
+
+    public virtual void Update(TEntity entity)
     {
         _dbSet.Update(entity);
     }
 
-    public virtual void DeleteAsync(TEntity entity)
+    public virtual void UpdateRange(IEnumerable<TEntity> entities)
+    {
+        _dbSet.UpdateRange(entities);
+    }
+
+    public virtual void Remove(TEntity entity)
     {
         _dbSet.Remove(entity);
+    }
+
+    public virtual void RemoveRange(IEnumerable<TEntity> entities)
+    {
+        _dbSet.RemoveRange(entities);
     }
 }

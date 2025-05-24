@@ -1,7 +1,6 @@
 ﻿using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs.DomainDTOs.ServerDTOs;
-using Harmony.Domain.Entities;
 using MediatR;
 
 namespace Harmony.Application.UseCases.ServersManagement.ServersManagementQueries;

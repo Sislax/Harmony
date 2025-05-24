@@ -2,7 +2,6 @@
 
 namespace Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 
-public interface IChannelRepository
+public interface IChannelRepository : IGenericRepository<Channel>
 {
-    void Add(Channel newChannel);
 }

@@ -2,8 +2,6 @@
 
 namespace Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 
-public interface IUserRepository
+public interface IUserRepository : IGenericRepository<User>
 {
-    Task<User?> GetUserByEmail(string email);
-    void InsertUser(User user);
 }

@@ -2,7 +2,6 @@
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
 using Harmony.Application.Models.DTOs.AuthDTOs;
-using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -15,19 +14,27 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
 {
     private readonly IIdentityService _identityService;
     private readonly IUserRepository _userRepository;
+    private readonly IQueryMaterializerFactory _queryMaterializerFactory;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<RegisterCommandHandler> _logger;
 
-    public RegisterCommandHandler(IIdentityService identityService, IUserRepository userRepository, IUnitOfWork unitOfWork, ILogger<RegisterCommandHandler> logger)
+    public RegisterCommandHandler(IIdentityService identityService, IUserRepository userRepository, IQueryMaterializerFactory queryMaterializerFactory, IUnitOfWork unitOfWork, ILogger<RegisterCommandHandler> logger)
     {
         _identityService = identityService;
         _userRepository = userRepository;
+        _queryMaterializerFactory = queryMaterializerFactory;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
     public async Task<RegisterResponseDTO> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        if(await _userRepository.GetUserByEmail(request.RegisterDTO.Email) != null)
+        User? user = await _userRepository.GetAsync(
+            filter: u => u.Email == request.RegisterDTO.Email,
+            materializer: _queryMaterializerFactory.FirstOrDefaultAsync<User>(),
+            cancellationToken: cancellationToken
+            );
+
+        if (user != null)
         {
             throw new UserDuplicateException($"User with email {request.RegisterDTO.Email} already exists.");
         }
@@ -60,7 +67,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterR
         }
 
         // Creates the DomainUser
-        _userRepository.InsertUser(
+        _userRepository.Add(
             new User
             {
                 Id = request.RegisterDTO.Id,

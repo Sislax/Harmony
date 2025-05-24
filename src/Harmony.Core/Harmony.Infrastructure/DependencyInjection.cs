@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Harmony.Application.Common.Interfaces;
 using Harmony.Application.Common.Interfaces.RepositoryInterfaces;
-using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using Harmony.Infrastructure.Data;
 using Harmony.Infrastructure.Models.Identity;
@@ -193,7 +192,7 @@ public static class DependencyInjection
                     }
 
                     // Create Domain User entity for Admin user
-                    userRepository.InsertUser(new User()
+                    userRepository.Add(new User()
                     {
                         Id = newAdminUser.Id,
                         FirstName = newAdminUser.FirstName,
@@ -234,7 +233,7 @@ public static class DependencyInjection
                     }
 
                     // Create Domain User entity for RegularUser user
-                    userRepository.InsertUser(new User()
+                    userRepository.Add(new User()
                     {
                         Id = newRegularUser.Id,
                         FirstName = newRegularUser.FirstName,

@@ -53,7 +53,7 @@ public class CreateServerCommandHandler : IRequestHandler<CreateServerCommand>
             ]
         };
 
-        _serverRepository.CreateAsync(newServer);
+        _serverRepository.Add(newServer);
 
         await _unitOfWork.SaveChangesAsync();
 
