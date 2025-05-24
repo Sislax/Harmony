@@ -21,12 +21,11 @@ public class GetServersByUserQueryHandler : IRequestHandler<GetServersByUserQuer
 
     public async Task<List<GetServersByUserResponseDTO>> Handle(GetServersByUserQuery request, CancellationToken cancellationToken)
     {
-        var serversOfUser = await _serverRepository.GetAsync(
+        return await _serverRepository.GetAsync(
             filter: s => s.ServerMembers.Any(sm => sm.UserId == request.UserId),
-            materializer: _queryMaterializerFactory.ToListAsync<Server>(),
+            select: s => new GetServersByUserResponseDTO(s.Id, s.ServerName),
+            materializer: _queryMaterializerFactory.ToListAsync<GetServersByUserResponseDTO>(),
             cancellationToken: cancellationToken
             );
-        List<Server> serversOfTheUser = await _serverRepository.GetServersByUserAsync(request.UserId);
-        return [.. serversOfTheUser.Select(s => new GetServersByUserResponseDTO(s.Id, s.ServerName))];
     }
 }
