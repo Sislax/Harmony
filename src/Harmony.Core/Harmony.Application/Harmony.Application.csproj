@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="UseCases\Authentication\AuthQueries\" />
+    <Folder Include="UseCases\ChannelsManagement\ChannelsManagementQueries\" />
   </ItemGroup>
 
 </Project>

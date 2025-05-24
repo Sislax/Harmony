@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Harmony.Application.Models.DTOs.DomainDTOs;
+using Harmony.Application.Models.DTOs.DomainDTOs.ServerDTOs;
 using Harmony.Application.UseCases.ServersManagement.ServersManagementCommands;
 using Harmony.Application.UseCases.ServersManagement.ServersManagementQueries;
 using MediatR;
@@ -32,7 +32,7 @@ public class ServerController : ControllerBase
             return Unauthorized("User is not authenticated.");
         }
 
-        await _sender.Send(new CreateServerCommand(new ServerDTO(serverName, userId.ToString())));
+        await _sender.Send(new CreateServerCommand(new CreateServerRequestDTO(serverName, userId.ToString())));
 
         return Ok();
     }
@@ -50,7 +50,7 @@ public class ServerController : ControllerBase
             return Unauthorized("User is not authenticated.");
         }
 
-        List<ServerDTO> serversOfTheUser = await _sender.Send(new GetServersByUserQuery(userId.ToString()));
+        List<GetServersByUserResponseDTO> serversOfTheUser = await _sender.Send(new GetServersByUserQuery(userId.ToString()));
 
         return Ok(serversOfTheUser);
     }

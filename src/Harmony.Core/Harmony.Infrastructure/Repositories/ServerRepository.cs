@@ -1,4 +1,5 @@
-﻿using Harmony.Domain.Abstractions.RepositoryInterfaces;
+﻿using System.Linq.Expressions;
+using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using Harmony.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,20 @@ public class ServerRepository : IServerRepository
         _context.Servers.Add(server);
     }
 
-    public async Task<List<Server>> GetServersByUser(string userId)
+    public async Task<Server> GetServerByIdAsync(Guid id)
+    {
+        return await _context.Servers.SingleAsync(s => s.Id == id);
+    }
+
+    public async Task<List<Server>> GetServersByUserAsync(string userId)
     {
         return await _context.ServerMembers.Where(sm => sm.UserId == userId)
                 .Select(sm => sm.Server)
                 .ToListAsync();
+    }
+
+    public async Task<List<ServerMember>> GetMembersAsync(Guid serverId)
+    {
+        return await _context.ServerMembers.Where(sm => sm.ServerId == serverId).ToListAsync();
     }
 }

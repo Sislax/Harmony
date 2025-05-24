@@ -1,5 +1,5 @@
 ﻿using Harmony.Application.Common.Interfaces;
-using Harmony.Application.Models.DTOs.DomainDTOs;
+using Harmony.Application.Models.DTOs.DomainDTOs.ServerDTOs;
 using Harmony.Domain.Abstractions.RepositoryInterfaces;
 using Harmony.Domain.Entities;
 using Harmony.Domain.Enums;
@@ -8,19 +8,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmony.Application.UseCases.ServersManagement.ServersManagementCommands;
 
-public record CreateServerCommand(ServerDTO ServerDTO) : IRequest;
+public record CreateServerCommand(CreateServerRequestDTO CreateServerDTO) : IRequest;
 
 public class CreateServerCommandHandler : IRequestHandler<CreateServerCommand>
 {
-    private readonly ILogger<CreateServerCommandHandler> _logger;
     private readonly IServerRepository _serverRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<CreateServerCommandHandler> _logger;
 
-    public CreateServerCommandHandler(ILogger<CreateServerCommandHandler> logger, IServerRepository serverRepository, IUnitOfWork unitOfWork)
+    public CreateServerCommandHandler(IServerRepository serverRepository, IUnitOfWork unitOfWork, ILogger<CreateServerCommandHandler> logger)
     {
-        _logger = logger;
         _serverRepository = serverRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task Handle(CreateServerCommand request, CancellationToken cancellationToken)
@@ -30,14 +30,14 @@ public class CreateServerCommandHandler : IRequestHandler<CreateServerCommand>
         Server newServer = new()
         {
             Id = idServer,
-            ServerName = request.ServerDTO.ServerName,
+            ServerName = request.CreateServerDTO.ServerName,
             ServerMembers =
             [
                 new ServerMember()
                 {
                     ServerId = idServer,
                     // We are sure this OwnerId will be passed by the controller. The exception is just to suppress the warning
-                    UserId = request.ServerDTO.OwnerId ?? throw new ArgumentNullException("Ops... Something went wrong. Try later..."),
+                    UserId = request.CreateServerDTO.OwnerId ?? throw new ArgumentNullException("Ops... Something went wrong. Try later..."),
                     UserRole = UserRole.Owner
                 }
             ],
