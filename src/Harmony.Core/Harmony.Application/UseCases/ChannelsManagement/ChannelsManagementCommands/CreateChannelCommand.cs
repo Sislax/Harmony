@@ -12,15 +12,15 @@ public record CreateChannelCommand(CreateChannelRequestDTO CreateChannelDTO) : I
 public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand>
 {
     private readonly IChannelRepository _channelRepository;
-    private readonly IServerRepository _serverRepository;
+    private readonly IServerMemberRepository _serverMemberRepository;
     private readonly IQueryMaterializerFactory _queryMaterializerFactory;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateChannelCommandHandler> _logger;
 
-    public CreateChannelCommandHandler(IChannelRepository channelRepository, IServerRepository serverRepository, IQueryMaterializerFactory queryMaterializerFactory, IUnitOfWork unitOfWork, ILogger<CreateChannelCommandHandler> logger)
+    public CreateChannelCommandHandler(IChannelRepository channelRepository, IServerMemberRepository serverMemberRepository, IQueryMaterializerFactory queryMaterializerFactory, IUnitOfWork unitOfWork, ILogger<CreateChannelCommandHandler> logger)
     {
         _channelRepository = channelRepository;
-        _serverRepository = serverRepository;
+        _serverMemberRepository = serverMemberRepository;
         _queryMaterializerFactory = queryMaterializerFactory;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -30,8 +30,8 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand>
     {
         Guid channelId = Guid.NewGuid();
 
-        List<ServerMember> serverMembers = await _serverRepository.GetAsync(
-            filter: s => s.ServerMembers.Any(sm => sm.ServerId == request.CreateChannelDTO.ServerId),
+        List<ServerMember> serverMembers = await _serverMemberRepository.GetAsync(
+            filter: sm => sm.ServerId == request.CreateChannelDTO.ServerId,
             materializer: _queryMaterializerFactory.ToListAsync<ServerMember>(),
             cancellationToken: cancellationToken
             );
