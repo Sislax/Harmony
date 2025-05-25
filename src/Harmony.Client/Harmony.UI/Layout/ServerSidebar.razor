@@ -4,7 +4,7 @@
 
 <div class="server-sidebar">
     <ul class="server-list">
-        @if(Servers != null)
+        @if(Servers != null && Servers.Count > 0)
         {
             @foreach (var server in Servers)
             {

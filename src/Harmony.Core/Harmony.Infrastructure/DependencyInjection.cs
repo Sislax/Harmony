@@ -6,6 +6,7 @@ using Harmony.Infrastructure.Data;
 using Harmony.Infrastructure.Models.Identity;
 using Harmony.Infrastructure.Models.Security;
 using Harmony.Infrastructure.Repositories;
+using Harmony.Infrastructure.Repositories.Materializers;
 using Harmony.Infrastructure.Security;
 using Harmony.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -130,6 +131,9 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IServerRepository, ServerRepository>();
+        services.AddScoped<IServerMemberRepository, ServerMemberRepository>();
+        services.AddScoped<IChannelRepository, ChannelRepository>();
+        services.AddScoped<IQueryMaterializerFactory, QueryMaterializerFactory>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

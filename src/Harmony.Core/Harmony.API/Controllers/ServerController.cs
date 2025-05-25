@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Harmony.API.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class ServerController : ControllerBase
 {
     public readonly ISender _sender;

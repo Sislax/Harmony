@@ -19,6 +19,6 @@ public class GetServerOwnerQueryHandler : IRequestHandler<GetServerOwnerQuery, G
 
     public async Task<Guid> Handle(GetServerOwnerQuery request, CancellationToken cancellationToken)
     {
-        
+        throw new NotImplementedException();
     }
 }
