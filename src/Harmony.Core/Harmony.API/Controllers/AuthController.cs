@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Harmony.Application.Models.DTOs.AuthDTOs;
 using Harmony.Application.UseCases.Authentication.AuthCommands;
 using MediatR;

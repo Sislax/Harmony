@@ -23,7 +23,7 @@ public class ServerController : ControllerBase
 
     [Authorize]
     [HttpPost("createServer")]
-    public async Task<IActionResult> CreateServer(string serverName)
+    public async Task<IActionResult> CreateServer([FromBody] string serverName)
     {
         Claim? userId = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -34,7 +34,7 @@ public class ServerController : ControllerBase
             return Unauthorized("User is not authenticated.");
         }
 
-        await _sender.Send(new CreateServerCommand(new CreateServerRequestDTO(serverName, userId.ToString())));
+        await _sender.Send(new CreateServerCommand(new CreateServerRequestDTO(serverName, userId.Value)));
 
         return Ok();
     }
@@ -52,7 +52,7 @@ public class ServerController : ControllerBase
             return Unauthorized("User is not authenticated.");
         }
 
-        List<GetServersByUserResponseDTO> serversOfTheUser = await _sender.Send(new GetServersByUserQuery(userId.ToString()));
+        List<GetServersByUserResponseDTO> serversOfTheUser = await _sender.Send(new GetServersByUserQuery(userId.Value));
 
         return Ok(serversOfTheUser);
     }

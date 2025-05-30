@@ -1,0 +1,53 @@
+﻿@inject ServerService _serverService;
+@inject NavigationManager _navigationManager;
+
+<MudDialog MaxWidth="MaxWidth.Small" FullWidth="true" Elevation="24">
+    <TitleContent>
+        <MudText Typo="Typo.h5">Create Server</MudText>
+    </TitleContent>
+
+    <DialogContent>
+        <MudTextField @bind-Value="ServerName"
+        Label="Server Name"
+        Placeholder="Inserisci il nome del Server"
+        Variant="Variant.Outlined"
+        InputType="InputType.Text"
+        Adornment="Adornment.Start"
+        Class="mb-4" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Crea</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+    private string ServerName { get; set; } = string.Empty;
+    private string CreateServerResult { get; set; } = string.Empty;
+
+    private async Task Submit()
+    {
+        bool isResponseSuccessful = await _serverService.CreateServer(ServerName);
+
+        if (!isResponseSuccessful)
+        {
+            CreateServerResult = "An error occurred during the server creation. Please try again later...";
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(true));
+
+        StateHasChanged();
+
+        _navigationManager.NavigateTo("/", true);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

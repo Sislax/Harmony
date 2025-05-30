@@ -10,16 +10,16 @@ public class Server : BaseEntity<Guid>
     /// <summary>
     /// Skip Navigation Property many to many
     /// </summary>
-    public List<User> Users { get; set; } = new List<User>();
+    public List<User> Users { get; set; } = [];
 
     /// <summary>
     /// Navigation Property one to many
     /// </summary>
-    public List<ServerMember> ServerMembers { get; set; } = new List<ServerMember>();
+    public List<ServerMember> ServerMembers { get; set; } = [];
 
     /// <summary>
     /// Navigation Property one to many
     /// </summary>
-    public List<Channel> Channels { get; set; } = new List<Channel>();
+    public List<Channel> Channels { get; set; } = [];
 
 }

@@ -26,5 +26,18 @@ namespace Harmony.UI.Services
 
             return null;
         }
+
+        public async Task<bool> CreateServer(string serverName)
+        {
+            HttpResponseMessage response = await _factory.CreateClient("HarmonyAPI")
+                .PostAsync("api/server/createServer", JsonContent.Create(serverName));
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

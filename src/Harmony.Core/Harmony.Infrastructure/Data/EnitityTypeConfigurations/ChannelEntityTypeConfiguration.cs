@@ -23,6 +23,7 @@ public class ChannelEntityTypeConfiguration : IEntityTypeConfiguration<Channel>
 
         builder.Property(c => c.ChannelType)
             .IsRequired()
+            .HasMaxLength(50)
             .HasConversion<string>();
 
         builder.Property(c => c.CreatedDate)

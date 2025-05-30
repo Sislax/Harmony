@@ -21,6 +21,7 @@ public class ServerMemberEntityTypeConfiguration : IEntityTypeConfiguration<Serv
                 .IsRequired();
 
         builder.Property(sm => sm.UserRole)
+            .HasMaxLength(50)
             .HasConversion<string>();
 
         // one Server -> many ServerMembers

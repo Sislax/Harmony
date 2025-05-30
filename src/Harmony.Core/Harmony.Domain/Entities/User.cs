@@ -16,30 +16,30 @@ public class User : BaseEntity<string>
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public List<RefreshToken> RefreshTokens { get; set; } = [];
 
     /// <summary>
     /// Skip Navigation Property Many to Many
     /// </summary>
-    public List<Server> Servers { get; set; } = new List<Server>();
+    public List<Server> Servers { get; set; } = [];
 
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<ServerMember> ServerMembers { get; set; } = new List<ServerMember>();
+    public List<ServerMember> ServerMembers { get; set; } = [];
 
     /// <summary>
     /// Skip Navigation Property Many to Many
     /// </summary>
-    public List<Channel> Channels { get; set; } = new List<Channel>();
+    public List<Channel> Channels { get; set; } = [];
 
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<ChannelMember> ChannelMembers { get; set; } = new List<ChannelMember>();
+    public List<ChannelMember> ChannelMembers { get; set; } = [];
 
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<Message> Messages { get; set; } = new List<Message>();
+    public List<Message> Messages { get; set; } = [];
 }

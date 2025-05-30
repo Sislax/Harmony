@@ -18,15 +18,15 @@ public class Channel : BaseEntity<Guid>
     /// <summary>
     /// Skip Navigation Property Many to Many
     /// </summary>
-    public List<User> Users { get; set; } = new List<User>();
+    public List<User> Users { get; set; } = [];
 
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<ChannelMember> ChannelMembers { get; set; } = new List<ChannelMember>();
+    public List<ChannelMember> ChannelMembers { get; set; } = [];
 
     /// <summary>
     /// Navigation Property One to Many
     /// </summary>
-    public List<Message> Messages { get; set; } = new List<Message>();
+    public List<Message> Messages { get; set; } = [];
 }

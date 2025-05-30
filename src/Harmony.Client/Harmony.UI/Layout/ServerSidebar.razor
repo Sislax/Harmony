@@ -1,33 +1,50 @@
 ﻿@using Harmony.UI.Models.DTOs
 @inject CustomAuthenticationStateProvider customAuthStateProvider
 @inject ServerService serverService
+@inject IDialogService _dialogService
 
-<div class="server-sidebar">
-    <ul class="server-list">
-        @if(Servers != null && Servers.Count > 0)
-        {
-            @foreach (var server in Servers)
-            {
-                <li class="server-item">
-                    <button class="server-button" title="@server.ServerName">
-                        @server.ServerName
-                    </button>
-                </li>
-            }
-        }
-    </ul>
-</div>
+<AuthorizeView>
+	<Authorized>
+
+		<div class="server-sidebar">
+			<ul class="server-list">
+				<li class="server-item">
+					<MudButton OnClick="OpenCreateServerDialogAsync" Variant="Variant.Outlined" Color="Color.Primary"> @* class="server-button" title="Crea Server" *@
+						Crea Server
+					</MudButton>
+				</li>
+				@if (Servers != null && Servers.Count > 0)
+				{
+					@foreach (var server in Servers)
+					{
+						<li class="server-item">
+							<MudButton Variant="Variant.Outlined" Color="Color.Primary" class="server-button" title="@server.ServerName">
+								@server.ServerName
+							</MudButton>
+						</li>
+					}
+				}
+			</ul>
+		</div>
+
+	</Authorized>
+</AuthorizeView>
 
 @code {
-    private List<ServerDTO>? Servers = [];
+	private List<ServerDTO>? Servers = [];
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await customAuthStateProvider.GetAuthenticationStateAsync();
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await customAuthStateProvider.GetAuthenticationStateAsync();
 
-        if (authState.User.Identity!.IsAuthenticated)
-        {
-            Servers = await serverService.GetServersByUser();
-        }
-    }
+		if (authState.User.Identity!.IsAuthenticated)
+		{
+			Servers = await serverService.GetServersByUser();
+		}
+	}
+
+	private async Task OpenCreateServerDialogAsync()
+	{
+		await _dialogService.ShowAsync<CreateServerDialog>("CreateServer");
+	}
 }
